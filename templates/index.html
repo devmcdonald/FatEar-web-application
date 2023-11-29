@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<h1>Welcome to FatEar!</h1>
+</head>
+<br>
+
+<body>
+	Input one or more fields below to search for songs:
+	<form action="/songSearch" method="POST">
+		<input type="text" name="artist" placeholder="artist" /> </br>
+		<input type="text" name="genre" placeholder="genre" /></br>
+		<input type="text" name="rating" placeholder="min rating" /></br>
+		<input type="submit" value=Search />
+		{% if error %}
+		<p class="error"><strong>Error:</strong> {{error}}</p>
+		{% endif %}
+	</form>
+	<br>
+	<a href="/login">Login</a>
+	<br>
+	<a href="/register">Register</a>
+</body>
+
+</html>

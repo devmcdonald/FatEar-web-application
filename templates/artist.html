@@ -1,0 +1,77 @@
+<html>
+    {% for line in artistResults %}
+<head>
+    <h1>{{line.artistName}}</h1>
+    
+</head>
+<br>
+<body>
+    <style type="text/css">
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+    Bio: {{line.artistBio}}
+    <br>
+    URL: {{line.artistURL}}
+    <br>
+    <br>
+    Songs by {{line.artistName}}:
+    {% endfor %}
+    <table>
+        <th>songID</th>
+        <th>Title</th>
+        <th>Genre</th>
+        <th>Release Date</th>
+        <th>Average Rating</th>
+        <th>Link</th>
+
+        {% for line in songResults %}
+        <tr>
+            <td>{{line.songID}}</td>
+            <td>{{line.title}}</td>
+            <td>{{line.genre}}</td>
+            <td>{{line.releaseDate}}</td>
+            <td>{{line.averageRating}}</td>
+            <td><a href="/select_song/{{line.songID}}">Song Page</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <br>
+    {% for line in artistResults %}
+    Albums by {{line.artistName}}:
+    {% endfor %}
+    <table>
+        <th>albumID</th>
+        <th>Title</th>
+        <th>Average Rating</th>
+
+        {% for line in albumResults %}
+        <tr>
+            <td>{{line.albumID}}</td>
+            <td>{{line.title}}</td>
+            <td>{{line.averageRating}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    {% for line in artistResults %}
+    <a href="/become_fan/{{line.artistID}}">Become Fan</a>
+    {% endfor %}
+    <br>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{error}}</p>
+    {% endif %}
+    <br>
+    <a href="/home">Return Home</a>
+    <br>
+    <a href="/login">Return to Login</a>
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,63 @@
+<html>
+
+<head>
+</head>
+
+<body>
+
+    <style type="text/css">
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+
+    Here are songs fitting your search:
+
+    <table>
+        <th>Song Title</th>
+        <th>Artist Name</th>
+        <th>Album Title</th>
+        <th>Genre</th>
+        <th>Average Rating</th>
+        <th>Song ID</th>
+
+
+            {% for line in song_list %}
+            
+            <tr>
+                <td>{{line.title}}</td>
+                <td>{{line.artistName}}</td>
+                <td>{{line.albumTitle}}</td>
+                <td>{{line.genre}}</td>
+                <td>{{line.avgrating}}</td>
+                <td><a href="/select_song/{{line.songID}}">{{line.songID}}</a></td>
+                
+            </tr>
+            {% endfor %}
+    </table>
+    
+   
+    <br>
+    <br>
+    Search for more songs:
+    <form action="/songSearch" method="POST">
+        <input type="text" name="artist" placeholder="artist" /> </br>
+        <input type="text" name="genre" placeholder="genre" /></br>
+        <input type="text" name="rating" placeholder="avg rating" /></br>
+        <input type="submit" value=Search />
+        {% if error %}
+        <p class="error"><strong>Error:</strong> {{error}}</p>
+        {% endif %}
+    </form>
+    <br>
+    <a href="/home">Return Home</a>
+    <br>
+    <a href="/login">Return to Login</a>
+
+
+</body>
+
+
+</html>

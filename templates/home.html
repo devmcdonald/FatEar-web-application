@@ -1,0 +1,102 @@
+<html>
+
+<style type="text/css">
+	table,
+	th,
+	td {
+		border: 1px solid black;
+	}
+</style>
+
+<head>
+	<h1>Welcome {{realname.fname}} {{realname.lname}} </h1>
+	username: {{username}}
+</head>
+<br>
+<br>
+
+<body>
+	Activity since your last visit:
+
+	<table>
+		<th>Friend or Followed User</th>
+		<th>AlbumID</th>
+		<th>SongID</th>
+		<th>Title</th>
+		<th>Review</th>
+		<th>Date</th>
+
+		{% for line in reviews %}
+		<tr>
+			<td>{{line.username}}</td>
+			<td>{{line.albumID}}</td>
+			<td><a href="/select_song/{{line.songID}}">{{line.songID}}</a></td>
+			<td>{{line.title}}</td>
+			<td>{{line.reviewText}}</td>
+			<td>{{line.reviewDate}}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<br>
+	New songs from your favorite artists:
+	<table>
+		<th>Artist</th>
+		<th>SongID</th>
+		<th>Song Title</th>
+		<th>SongID</th>
+
+		<form action="/select_song" method="GET">
+			{% for line in newsongs %}
+
+			<tr>
+				<td>{{line.artistName}}</td>
+				<td>{{line.songID}}</td>
+				<td>{{line.title}}</td>
+				<td><a href="/select_song/{{line.songID}}">{{line.songID}}</a></td>
+				{% endfor %}
+				</td>
+			</tr>
+	</table>
+
+	</form>
+	<br>
+	<br>
+	
+	Search for more songs:
+	<form action="/songSearch" method="POST">
+		<input type="text" name="artist" placeholder="artist" /> </br>
+		<input type="text" name="genre" placeholder="genre" /></br>
+		<input type="text" name="rating" placeholder="min rating" /></br>
+		<input type="submit" value=Search />
+	</form>
+
+	{% if error %}
+	<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}
+
+
+	<br>
+	<a href="/curr_friends">My Friends</a>
+	<br>
+	<a href="/pending_requests">Pending Requests</a>
+	<br>
+	Search for other users:
+	<form action="/search_users" method="GET">
+		<input type="text" name="user" placeholder="username or name" />
+		<input type="submit" value=Search />
+	</form>
+	<br>
+	<a href="/followed_artists">My Favorite Artists</a>
+	<br>
+	Search for artists:
+	<form action="/search_artists" method="GET">
+		<input type="text" name="search" placeholder="Artist Name or ID" />
+		<input type="submit" value=Search />
+	</form>
+	<br>
+	<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

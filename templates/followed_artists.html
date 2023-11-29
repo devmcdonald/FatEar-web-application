@@ -1,0 +1,44 @@
+<html>
+
+<head>
+</head>
+
+<body>
+
+    <style type="text/css">
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+
+    Here are your followed artists:
+
+    <table>
+        <th>artistID</th>
+        <th>Artist Name</th>
+        <th>Bio</th>
+        <th>URL</th>
+
+        {% for line in artistList %}
+        <tr>
+            <td>{{line.artistID}}</td>
+            <td>{{line.artistName}}</td>
+            <td>{{line.artistBio}}</td>
+            <td><a href="/artist/{{line.artistID}}">Artist Page</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <br>
+    <a href="/home">Return Home</a>
+    <br>
+    <br>
+    <a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

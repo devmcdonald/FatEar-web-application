@@ -1,0 +1,42 @@
+<html>
+
+<head>
+</head>
+
+<body>
+
+    <style type="text/css">
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+
+    Your Friendship Requests:
+
+    <table>
+        <th>username</th>
+        <th>Accept Request</th>
+        <th>Deny Request</th>
+
+        {% for line in requests %}
+        <tr>
+            <td>{{line.requester}}</td>
+            <td><a href="/accept_req/{{line.requester}}">Accept</a></td>
+            <td><a href="/deny_req/{{line.requester}}">Decline</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <br>
+    <a href="/home">Return Home</a>
+    <br>
+    <br>
+    <a href="/logout">Logout</a>
+
+</body>
+
+
+</html>
