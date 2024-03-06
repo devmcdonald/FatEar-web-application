@@ -1,5 +1,5 @@
 # FatEar-web-application
-Database ER Diagram presented in Project Part 1 PDF.
+Database ER Diagram presented in ER-Diagram.PDF.
 
 Database schema and sample insertions in SQL files.
 
