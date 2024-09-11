@@ -150,7 +150,7 @@ def loginAuth():
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
-    query = "SELECT pwd FROM user WHERE username = %s"
+    query = "SELECT pwd FROM users WHERE username = %s"
     cursor.execute(query, (username))
     # stores the results in a variable
     hashedPW = cursor.fetchone()
@@ -183,7 +183,7 @@ def registerAuth():
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
-    query = "SELECT * FROM user WHERE username = %s"
+    query = "SELECT * FROM users WHERE username = %s"
     cursor.execute(query, (username))
     # stores the results in a variable
     data = cursor.fetchone()
@@ -214,7 +214,7 @@ def home(error=None):
             from reviewAlbum join album using(albumID)\
             where username = @myvar AND reviewDate > \
                 (select lastlogin \
-                from user \
+                from users \
                 where username = @myvar) \
             AND \
                 username in (\
@@ -234,7 +234,7 @@ def home(error=None):
             from reviewSong join song using(songID)\
             where username = @myvar AND reviewDate >\
                 (select lastlogin\
-                from user\
+                from users\
                 where username = @myvar) \
             AND\
                 username in (\
@@ -254,11 +254,11 @@ def home(error=None):
         cursor.execute(query2, (data1))
         data2 = cursor.fetchall()
         query3 = "SELECT concat(artist.fname, ' ', artist.lname) AS artistName, songID, title\
-            FROM ((((user NATURAL JOIN userfanofartist) NATURAL JOIN artistperformssong) NATURAL JOIN song ) JOIN artist using(artistID))\
+            FROM ((((users NATURAL JOIN userfanofartist) NATURAL JOIN artistperformssong) NATURAL JOIN song ) JOIN artist using(artistID))\
             WHERE username = %s and releaseDate > lastlogin"
         cursor.execute(query3, (user))
         data3 = cursor.fetchall()
-        query4 = "SELECT fname, lname FROM user WHERE username = %s"
+        query4 = "SELECT fname, lname FROM users WHERE username = %s"
         cursor.execute(query4, (user))
         data4 = cursor.fetchone()
         cursor.close()
@@ -413,7 +413,7 @@ def search_users():
     username = session["username"]
     friend = request.args["user"]
     cursor = conn.cursor()
-    query = "SELECT username, concat(fname, ' ', lname) as name FROM user WHERE (username like %s OR concat(fname, ' ', lname) like %s) and username <> %s"
+    query = "SELECT username, concat(fname, ' ', lname) as name FROM users WHERE (username like %s OR concat(fname, ' ', lname) like %s) and username <> %s"
     cursor.execute(query, ("%" + friend + "%", "%" + friend + "%", username))
     data = cursor.fetchall()
     if data:
@@ -560,7 +560,7 @@ def search_artists():
 def user(user, error=None):
     username = session["username"]  # must be logged in
     cursor = conn.cursor()
-    userQuery = "SELECT username, concat(fname, ' ', lname) as name, lastlogin, nickname FROM user WHERE username = %s"
+    userQuery = "SELECT username, concat(fname, ' ', lname) as name, lastlogin, nickname FROM users WHERE username = %s"
     cursor.execute(userQuery, (user))
     userInfo = cursor.fetchall()
 
