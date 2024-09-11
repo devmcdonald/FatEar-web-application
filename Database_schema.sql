@@ -35,8 +35,8 @@ create table friend (
     user2 varchar(10),
     acceptStatus varchar(20) check (acceptStatus in ('Accepted', 'Not Accepted', 'Pending')),
     requestSentBy varchar(10),
-    createdAt datetime,
-    updatedAt datetime,
+    createdAt timestamp,
+    updatedAt timestamp,
     primary key (user1, user2),
     foreign key (user1) references users(username) on delete cascade,
     foreign key (user2) references users(username) on delete cascade
@@ -45,7 +45,7 @@ create table friend (
 create table follows (
     follower varchar(10),
     follows varchar(10),
-    createdAt datetime,
+    createdAt timestamp,
     primary key (follower, follows),
     foreign key (follower) references users(username) on delete cascade,
     foreign key (follows) references users(username) on delete cascade
