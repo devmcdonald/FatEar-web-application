@@ -33,7 +33,7 @@ create table album (
 create table friend (
     user1 varchar(10),
     user2 varchar(10),
-    acceptStatus varchar(10) check (acceptStatus in ('Accepted', 'Not accepted', 'Pending')),
+    acceptStatus varchar(20) check (acceptStatus in ('Accepted', 'Not Accepted', 'Pending')),
     requestSentBy varchar(10),
     createdAt datetime,
     updatedAt datetime,
