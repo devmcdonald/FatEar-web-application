@@ -1,4 +1,4 @@
-create table user (
+create table users (
     username varchar(10) not null,
     pwd varchar(15),
     fname varchar(20) not null,
@@ -38,8 +38,8 @@ create table friend (
     createdAt datetime,
     updatedAt datetime,
     primary key (user1, user2),
-    foreign key (user1) references user(username) on delete cascade,
-    foreign key (user2) references user(username) on delete cascade
+    foreign key (user1) references users(username) on delete cascade,
+    foreign key (user2) references users(username) on delete cascade
 );
 
 create table follows (
@@ -47,8 +47,8 @@ create table follows (
     follows varchar(10),
     createdAt datetime,
     primary key (follower, follows),
-    foreign key (follower) references user(username) on delete cascade,
-    foreign key (follows) references user(username) on delete cascade
+    foreign key (follower) references users(username) on delete cascade,
+    foreign key (follows) references users(username) on delete cascade
 );
 
 create table rateAlbum (
@@ -56,7 +56,7 @@ create table rateAlbum (
     albumID varchar(5),
     stars int check (stars in (1,2,3,4,5)),
     primary key (username, albumID),
-    foreign key (username) references user(username) on delete cascade,
+    foreign key (username) references users(username) on delete cascade,
     foreign key (albumID) references album(albumID) on delete cascade
 );
 
@@ -66,7 +66,7 @@ create table reviewAlbum (
     reviewText varchar(100),
     reviewDate date,
     primary key (username, albumID),
-    foreign key (username) references user(username) on delete cascade,
+    foreign key (username) references users(username) on delete cascade,
     foreign key (albumID) references album(albumID) on delete cascade
 );
 
@@ -76,7 +76,7 @@ create table rateSong (
     stars int check (stars in (1,2,3,4,5)),
     ratingDate date, 
     primary key (username, songID),
-    foreign key (username) references user(username) on delete cascade,
+    foreign key (username) references users(username) on delete cascade,
     foreign key (songID) references song(songID) on delete cascade
 );
 
@@ -86,7 +86,7 @@ create table reviewSong (
     reviewText varchar(100),
     reviewDate date,
     primary key (username, songID),
-    foreign key (username) references user(username) on delete cascade,
+    foreign key (username) references users(username) on delete cascade,
     foreign key (songID) references song(songID) on delete cascade
 );
 
@@ -117,6 +117,6 @@ create table userFanOfArtist (
     username varchar(10),
     artistID varchar(5),
     primary key (username, artistID),
-    foreign key (username) references user(username) on delete cascade,
+    foreign key (username) references users(username) on delete cascade,
     foreign key (artistID) references artist(artistID) on delete cascade
 );
