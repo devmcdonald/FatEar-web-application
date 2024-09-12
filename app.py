@@ -94,7 +94,7 @@ def songSearch():
         query = """
             SELECT song.title AS title, 
                 (artist.fname || ' ' || artist.lname) AS artistName, 
-                albumID, 
+                album.title AS albumTitle, 
                 ROUND(AVG(stars), 2) AS avgrating, 
                 songID, 
                 genre 
@@ -105,7 +105,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
             HAVING (artist.fname || ' ' || artist.lname) ILIKE %s
         """
         cursor.execute(query, ("%" + artist + "%",))
@@ -114,7 +114,7 @@ def songSearch():
         query = """
             SELECT song.title AS title, 
                 (artist.fname || ' ' || artist.lname) AS artistName, 
-                albumID, 
+                album.title AS albumTitle,
                 ROUND(AVG(stars), 2) AS avgrating, 
                 songID, 
                 genre 
@@ -125,7 +125,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
             HAVING genre ILIKE %s
             """
         cursor.execute(query, ("%" + genre + "%",))
@@ -134,7 +134,7 @@ def songSearch():
         query = """
             SELECT song.title AS title, 
                 (artist.fname || ' ' || artist.lname) AS artistName, 
-                albumID, 
+                album.title AS albumTitle, 
                 ROUND(AVG(stars), 2) AS avgrating, 
                 songID, 
                 genre 
@@ -145,7 +145,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
             HAVING ROUND(AVG(stars), 2) >= %s
             """
         cursor.execute(query, (rating))
@@ -154,7 +154,7 @@ def songSearch():
         query = """
             SELECT song.title AS title, 
                 (artist.fname || ' ' || artist.lname) AS artistName, 
-                albumID, 
+                album.title AS albumTitle, 
                 ROUND(AVG(stars), 2) AS avgrating, 
                 songID, 
                 genre 
@@ -165,7 +165,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
             HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and genre ILIKE %s
         """
         
@@ -175,7 +175,7 @@ def songSearch():
         query = """
             SELECT song.title AS title, 
                 (artist.fname || ' ' || artist.lname) AS artistName, 
-                albumID, 
+                album.title AS albumTitle, 
                 ROUND(AVG(stars), 2) AS avgrating, 
                 songID, 
                 genre 
@@ -186,7 +186,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
             HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and ROUND(AVG(stars), 2) >= %s
         """
         
@@ -196,7 +196,7 @@ def songSearch():
         query = """
             SELECT song.title AS title, 
                 (artist.fname || ' ' || artist.lname) AS artistName, 
-                albumID, 
+                album.title AS albumTitle, 
                 ROUND(AVG(stars), 2) AS avgrating, 
                 songID, 
                 genre 
@@ -207,7 +207,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
             HAVING genre ILIKE %s and ROUND(AVG(stars), 2) >= %s
         """
         
@@ -217,7 +217,7 @@ def songSearch():
         query = """
             SELECT song.title AS title, 
                 (artist.fname || ' ' || artist.lname) AS artistName, 
-                albumID, 
+                album.title AS albumTitle, 
                 ROUND(AVG(stars), 2) AS avgrating, 
                 songID, 
                 genre 
@@ -228,7 +228,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
             HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and genre ILIKE %s and ROUND(AVG(stars), 2) >= %s
         """
         
@@ -347,50 +347,49 @@ def home(error=None):
     else:
         user = session["username"]
         cursor = conn.cursor()
-        query1 = " SET @myvar = %s;"
+        # Query 2 finds reviews of friends since my last login
         query2 = "\
             (select username, albumID, null as songID, title, reviewText, reviewDate \
             from reviewAlbum join album using(albumID)\
-            where username = @myvar AND reviewDate > \
+            where username = %s AND reviewDate > \
                 (select lastlogin \
                 from users \
-                where username = @myvar) \
+                where username = %s) \
             AND \
                 username in (\
                     select F.user2 as username\
                     from friend as F\
-                    where F.user1 = @myvar and F.acceptStatus = 'Accepted' \
+                    where F.user1 = %s and F.acceptStatus = 'Accepted' \
                 UNION distinct\
                     select S.user1 as username\
                     from friend as S\
-                    where S.user2 = @myvar and S.acceptStatus = 'Accepted') \
+                    where S.user2 = %s and S.acceptStatus = 'Accepted') \
                 OR username in\
                 (select follows as username\
                 from follows\
-                where follower = @myvar))\
+                where follower = %s))\
         UNION\
             (select username, null as albumID, songID, title, reviewText, reviewDate\
             from reviewSong join song using(songID)\
-            where username = @myvar AND reviewDate >\
+            where username = %s AND reviewDate >\
                 (select lastlogin\
                 from users\
-                where username = @myvar) \
+                where username = %s) \
             AND\
                 username in (\
                     select F.user2 as username \
                     from friend as F\
-                    where F.user1 = @myvar and F.acceptStatus = 'Accepted' \
+                    where F.user1 = %s and F.acceptStatus = 'Accepted' \
                 UNION distinct\
                     select S.user1 as username\
                     from friend as S\
-                    where S.user2 = @myvar and S.acceptStatus = 'Accepted') \
+                    where S.user2 = %s and S.acceptStatus = 'Accepted') \
                 OR username in\
                     (select follows as FollowedUsers\
                     from follows\
-                    where follower = @myvar));"
-        cursor.execute(query1, (user))
-        data1 = cursor.fetchone()
-        cursor.execute(query2, (data1))
+                    where follower = %s));"
+        
+        cursor.execute(query2, (user, user, user, user, user, user, user, user, user, user))
         data2 = cursor.fetchall()
         query3 = "SELECT concat(artist.fname, ' ', artist.lname) AS artistName, songID, title\
             FROM ((((users NATURAL JOIN userfanofartist) NATURAL JOIN artistperformssong) NATURAL JOIN song ) JOIN artist using(artistID))\

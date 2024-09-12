@@ -32,16 +32,16 @@ INSERT INTO artist (artistID, fname, lname, artistBio, artistURL) VALUES
  ('swift', 'Taylor', 'Swift', 'Taylor Swift is an American singer-songwriter.', 'tswift.com'),
  ('gomez', 'Selena', 'Gomez', NULL, 'selenagomez.com');
 
-INSERT INTO album (albumID) VALUES
- ('MC001'),
- ('MC002'),
- ('MW001'),
- ('HS001'),
- ('AG001'),
- ('MB001'),
- ('IC001'),
- ('TS001'),
- ('SG001');
+INSERT INTO album (albumID, title) VALUES
+ ('MC001', 'Endless Summer Vacation'),
+ ('MC002', 'Backyard Sessions'),
+ ('MW001', 'One Thing at a Time'),
+ ('HS001', "Harry's House"),
+ ('AG001', 'Starboy'),
+ ('MB001', 'Heroes & Villains'),
+ ('IC001', 'Take Me Home'),
+ ('TS001', 'Midnights'),
+ ('SG001', 'Rave & Roses');
 
 INSERT INTO friend (user1, user2, acceptStatus, requestSentBy, createdAt, updatedAt) VALUES
  ('gwash', 'jadams', 'Accepted', 'jadams', '2022-01-01 11:00:00', '2022-02-15 01:00:00'),

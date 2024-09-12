@@ -27,6 +27,7 @@ create table artist (
 
 create table album (
     albumID varchar(5),
+    title text,
     primary key (albumID)
 );
 
