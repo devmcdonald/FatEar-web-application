@@ -32,10 +32,10 @@ create table album (
 );
 
 create table friend (
-    user1 varchar(10),
-    user2 varchar(10),
+    user1 varchar(20),
+    user2 varchar(20),
     acceptStatus varchar(20) check (acceptStatus in ('Accepted', 'Not Accepted', 'Pending')),
-    requestSentBy varchar(10),
+    requestSentBy varchar(20),
     createdAt timestamp,
     updatedAt timestamp,
     primary key (user1, user2),
@@ -44,8 +44,8 @@ create table friend (
 );
 
 create table follows (
-    follower varchar(10),
-    follows varchar(10),
+    follower varchar(20),
+    follows varchar(20),
     createdAt timestamp,
     primary key (follower, follows),
     foreign key (follower) references users(username) on delete cascade,
@@ -53,7 +53,7 @@ create table follows (
 );
 
 create table rateAlbum (
-    username varchar(10),
+    username varchar(20),
     albumID varchar(5),
     stars int check (stars in (1,2,3,4,5)),
     primary key (username, albumID),
@@ -62,7 +62,7 @@ create table rateAlbum (
 );
 
 create table reviewAlbum (
-    username varchar(10),
+    username varchar(20),
     albumID varchar(5),
     reviewText varchar(100),
     reviewDate date,
@@ -72,7 +72,7 @@ create table reviewAlbum (
 );
 
 create table rateSong (
-    username varchar(10),
+    username varchar(20),
     songID varchar(5),
     stars int check (stars in (1,2,3,4,5)),
     ratingDate date, 
@@ -82,7 +82,7 @@ create table rateSong (
 );
 
 create table reviewSong (
-    username varchar(10),
+    username varchar(20),
     songID varchar(5),
     reviewText varchar(100),
     reviewDate date,
@@ -115,7 +115,7 @@ create table artistPerformsSong (
 );
 
 create table userFanOfArtist (
-    username varchar(10),
+    username varchar(20),
     artistID varchar(5),
     primary key (username, artistID),
     foreign key (username) references users(username) on delete cascade,

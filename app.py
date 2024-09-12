@@ -454,6 +454,7 @@ def select_song(songID, error=None):
 
 @app.route("/post", methods=["POST"])
 def post():
+    
     if "username" not in session:
         songID = request.form["songID"]
         return select_song(songID, error="Cannot Review - User Not Logged In")
@@ -463,6 +464,7 @@ def post():
         cursor = conn.cursor()
         review = request.form["reviewText"]
         songID = request.form["songID"]
+        
         query0 = (
             "SELECT username, songID FROM reviewsong where username=%s and songID=%s"
         )
