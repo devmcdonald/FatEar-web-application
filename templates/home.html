@@ -1,102 +1,110 @@
+<!DOCTYPE html>
 <html>
 
-<style type="text/css">
-	table,
-	th,
-	td {
-		border: 1px solid black;
-	}
-</style>
-
 <head>
-	<h1>Welcome {{realname.fname}} {{realname.lname}} </h1>
-	username: {{username}}
+    <style type="text/css">
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
 </head>
-<br>
-<br>
 
 <body>
-	Activity since your last visit:
 
-	<table>
-		<th>Friend or Followed User</th>
-		<th>AlbumID</th>
-		<th>SongID</th>
-		<th>Title</th>
-		<th>Review</th>
-		<th>Date</th>
+    <h1>Welcome {{realname.fname}} {{realname.lname}}</h1>
+    <p>Username: {{username}}</p>
 
-		{% for line in reviews %}
-		<tr>
-			<td>{{line.username}}</td>
-			<td>{{line.albumid}}</td>
-			<td><a href="/select_song/{{line.songid}}">{{line.songID}}</a></td>
-			<td>{{line.title}}</td>
-			<td>{{line.reviewtext}}</td>
-			<td>{{line.reviewdate}}</td>
-		</tr>
-		{% endfor %}
-	</table>
-	<br>
-	New songs from your favorite artists:
-	<table>
-		<th>Artist</th>
-		<th>SongID</th>
-		<th>Song Title</th>
-		<th>SongID</th>
+    <h2>Activity since your last visit:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Friend or Followed User</th>
+                <th>Album Name</th>
+                <th>Song ID</th>
+                <th>Title</th>
+                <th>Review</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in reviews %}
+            <tr>
+                <td>{{ line.username }}</td>
+                <td>{{ line.albumname }}</td>
+                <td><a href="/select_song/{{ line.songid }}">{{ line.songid }}</a></td>
+                <td>{{ line.title }}</td>
+                <td>{{ line.reviewtext }}</td>
+                <td>{{ line.reviewdate }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No reviews found since your last visit.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-		<form action="/select_song" method="GET">
-			{% for line in newsongs %}
+    <h2>New songs from your favorite artists:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Artist</th>
+                <th>Song ID</th>
+                <th>Song Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in newsongs %}
+            <tr>
+                <td>{{ line.artistname }}</td>
+                <td><a href="/select_song/{{ line.songid }}">{{ line.songid }}</a></td>
+                <td>{{ line.title }}</td>
+                
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No new songs found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-			<tr>
-				<td>{{line.artistname}}</td>
-				<td>{{line.songid}}</td>
-				<td>{{line.title}}</td>
-				<td><a href="/select_song/{{line.songid}}">{{line.songid}}</a></td>
-				{% endfor %}
-				</td>
-			</tr>
-	</table>
+    <h2>Search for more songs:</h2>
+    <form action="/songSearch" method="POST">
+        <input type="text" name="artist" placeholder="artist" /><br>
+        <input type="text" name="genre" placeholder="genre" /><br>
+        <input type="text" name="rating" placeholder="min rating" /><br>
+        <input type="submit" value="Search" />
+    </form>
 
-	</form>
-	<br>
-	<br>
-	
-	Search for more songs:
-	<form action="/songSearch" method="POST">
-		<input type="text" name="artist" placeholder="artist" /> </br>
-		<input type="text" name="genre" placeholder="genre" /></br>
-		<input type="text" name="rating" placeholder="min rating" /></br>
-		<input type="submit" value=Search />
-	</form>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
 
-	{% if error %}
-	<p class="error"><strong>Error:</strong> {{error}}</p>
-	{% endif %}
+    <br>
+    <a href="/curr_friends">My Friends</a><br>
+    <a href="/pending_requests">Pending Requests</a><br>
 
+    <h2>Search for other users:</h2>
+    <form action="/search_users" method="GET">
+        <input type="text" name="user" placeholder="username or name" />
+        <input type="submit" value="Search" />
+    </form>
 
-	<br>
-	<a href="/curr_friends">My Friends</a>
-	<br>
-	<a href="/pending_requests">Pending Requests</a>
-	<br>
-	Search for other users:
-	<form action="/search_users" method="GET">
-		<input type="text" name="user" placeholder="username or name" />
-		<input type="submit" value=Search />
-	</form>
-	<br>
-	<a href="/followed_artists">My Favorite Artists</a>
-	<br>
-	Search for artists:
-	<form action="/search_artists" method="GET">
-		<input type="text" name="search" placeholder="Artist Name or ID" />
-		<input type="submit" value=Search />
-	</form>
-	<br>
-	<a href="/logout">Logout</a>
+    <h2>Search for artists:</h2>
+    <form action="/search_artists" method="GET">
+        <input type="text" name="search" placeholder="Artist Name or ID" />
+        <input type="submit" value="Search" />
+    </form>
+
+    <br>
+    <a href="/logout">Logout</a>
 
 </body>
-
 
 </html>

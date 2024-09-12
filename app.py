@@ -349,7 +349,7 @@ def home(error=None):
         cursor = conn.cursor()
         # Query 2 finds reviews of friends since my last login
         query2 = "\
-            (select username, albumID, null as songID, title, reviewText, reviewDate \
+            (select username, album.title AS albumName, null as songID, title, reviewText, reviewDate \
             from reviewAlbum join album using(albumID)\
             where username = %s AND reviewDate > \
                 (select lastlogin \
@@ -369,7 +369,7 @@ def home(error=None):
                 from follows\
                 where follower = %s))\
         UNION\
-            (select username, null as albumID, songID, title, reviewText, reviewDate\
+            (select username, null as albumName, songID, title, reviewText, reviewDate\
             from reviewSong join song using(songID)\
             where username = %s AND reviewDate >\
                 (select lastlogin\
@@ -391,21 +391,35 @@ def home(error=None):
         
         cursor.execute(query2, (user, user, user, user, user, user, user, user, user, user))
         data2 = cursor.fetchall()
+        # Convert reviews into a list of dictionaries
+        review_columns = [desc[0] for desc in cursor.description]
+        reviews = [dict(zip(review_columns, row)) for row in data2]
+        
         query3 = "SELECT (artist.fname || ' ' || artist.lname) AS artistName, songID, title\
             FROM ((((users NATURAL JOIN userfanofartist) NATURAL JOIN artistperformssong) NATURAL JOIN song ) JOIN artist using(artistID))\
             WHERE username = %s and releaseDate > lastlogin"
         cursor.execute(query3, (user,))
         data3 = cursor.fetchall()
+        
+        # Convert new songs into a list of dictionaries
+        song_columns = [desc[0] for desc in cursor.description]
+        newsongs = [dict(zip(song_columns, row)) for row in data3]
+        
         query4 = "SELECT fname, lname FROM users WHERE username = %s"
         cursor.execute(query4, (user,))
         data4 = cursor.fetchone()
+        
+        # Convert the result into a dictionary
+        realname = {'fname': data4[0], 'lname': data4[1]} if data4 else {'fname': '', 'lname': ''}
+        
         cursor.close()
+        
         return render_template(
             "home.html",
             username=user,
-            reviews=data2,
-            newsongs=data3,
-            realname=data4,
+            reviews=reviews,
+            newsongs=newsongs,
+            realname=realname,
             error=error,
         )
 
