@@ -2,7 +2,7 @@
 
 <head>
     {% for line in song_info %}
-    <h1>{{line.title}} by {{line.artistName}}</h1>
+    <h1>{{line.title}} by {{line.artistname}}</h1>
     {% endfor %}
 </head>
 
@@ -26,14 +26,14 @@
 
         {% for line in song_info %}
         <tr>
-            <td>{{line.songID}}</td>
+            <td>{{line.songid}}</td>
             <td>{{line.title}}</td>
-            <td><a href="/artist/{{line.artistID}}">{{line.artistName}}</a></td>
+            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
             <td>{{line.genre}}</td>
-            <td>{{line.releaseDate}}</td>
-            <td>{{line.songURL}}</td>
-            <td>{{line.albumTitle}}</td>
-            <td>{{line.averageRating}}</td>
+            <td>{{line.releasedate}}</td>
+            <td>{{line.songurl}}</td>
+            <td>{{line.albumtitle}}</td>
+            <td>{{line.avgrating}}</td>
         </tr>
         {% endfor %}
     </table>
@@ -48,8 +48,8 @@
         {% for line in reviews %}
         <tr>
             <td>{{line.username}}</td>
-            <td>{{line.reviewText}}</td>
-            <td>{{line.reviewDate}}</td>
+            <td>{{line.reviewtext}}</td>
+            <td>{{line.reviewdate}}</td>
         </tr>
         {% endfor %}
     </table>
@@ -59,7 +59,7 @@
     Write a review:
     <form action="/post" method="POST">
         <input type="text" name="reviewText" placeholder="Review" required></input> </br>
-        <input type="hidden" name="songID" value={{line.songID}}></input>
+        <input type="hidden" name="songID" value={{line.songid}}></input>
         <input type="submit" name="Submit" value="Submit" />
         {% endfor %}
     </form>
@@ -75,7 +75,7 @@
             <option value="4">4</option>
             <option value="5">5</option>
         </select>
-        <input type="hidden" name="songID" value={{line.songID}}></input>
+        <input type="hidden" name="songID" value={{line.songid}}></input>
         {% endfor %}
         <input type="submit" name="Submit" value="Submit Rating" />
     </form>
@@ -85,7 +85,7 @@
     {% endif %}
     <br>
     {% for line in song_info %}
-    <a href="/artist/{{line.artistID}}">Go to Artist Page</a>
+    <a href="/artist/{{line.artistid}}">Go to Artist Page</a>
     {% endfor %}
     <br>
     <a href="/home">Return Home</a>
