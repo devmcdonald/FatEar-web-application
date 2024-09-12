@@ -105,7 +105,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
+            GROUP BY songID, artist.fname, artist.lname, song.title, album.title, genre 
             HAVING (artist.fname || ' ' || artist.lname) ILIKE %s
         """
         cursor.execute(query, ("%" + artist + "%",))
@@ -125,7 +125,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
+            GROUP BY songID, artist.fname, artist.lname, song.title, album.title, genre 
             HAVING genre ILIKE %s
             """
         cursor.execute(query, ("%" + genre + "%",))
@@ -145,7 +145,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
+            GROUP BY songID, artist.fname, artist.lname, song.title, album.title, genre 
             HAVING ROUND(AVG(stars), 2) >= %s
             """
         cursor.execute(query, (rating))
@@ -165,7 +165,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
+            GROUP BY songID, artist.fname, artist.lname, song.title, album.title, genre 
             HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and genre ILIKE %s
         """
         
@@ -186,7 +186,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
+            GROUP BY songID, artist.fname, artist.lname, song.title, album.title, genre 
             HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and ROUND(AVG(stars), 2) >= %s
         """
         
@@ -207,7 +207,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
+            GROUP BY songID, artist.fname, artist.lname, song.title, album.title, genre 
             HAVING genre ILIKE %s and ROUND(AVG(stars), 2) >= %s
         """
         
@@ -228,7 +228,7 @@ def songSearch():
             NATURAL JOIN songinalbum) 
             JOIN album USING(albumID) 
             JOIN ratesong USING(songID) 
-            GROUP BY songID, artist.fname, artist.lname, title, album.title, genre 
+            GROUP BY songID, artist.fname, artist.lname, song.title, album.title, genre 
             HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and genre ILIKE %s and ROUND(AVG(stars), 2) >= %s
         """
         
@@ -391,13 +391,13 @@ def home(error=None):
         
         cursor.execute(query2, (user, user, user, user, user, user, user, user, user, user))
         data2 = cursor.fetchall()
-        query3 = "SELECT concat(artist.fname, ' ', artist.lname) AS artistName, songID, title\
+        query3 = "SELECT (artist.fname || ' ' || artist.lname) AS artistName, songID, title\
             FROM ((((users NATURAL JOIN userfanofartist) NATURAL JOIN artistperformssong) NATURAL JOIN song ) JOIN artist using(artistID))\
             WHERE username = %s and releaseDate > lastlogin"
-        cursor.execute(query3, (user))
+        cursor.execute(query3, (user,))
         data3 = cursor.fetchall()
         query4 = "SELECT fname, lname FROM users WHERE username = %s"
-        cursor.execute(query4, (user))
+        cursor.execute(query4, (user,))
         data4 = cursor.fetchone()
         cursor.close()
         return render_template(
