@@ -1,63 +1,69 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-</head>
-
-<body>
-
     <style type="text/css">
         table,
         th,
         td {
             border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
         }
     </style>
+</head>
 
-    Here are songs fitting your search:
+<body>
+
+    <p>Here are songs fitting your search:</p>
 
     <table>
-        <th>Song Title</th>
-        <th>Artist Name</th>
-        <th>Album Title</th>
-        <th>Genre</th>
-        <th>Average Rating</th>
-        <th>Song ID</th>
-
-
-            {% for line in song_list %}
-            
+        <thead>
             <tr>
-                <td>{{line.title}}</td>
-                <td>{{line.artistName}}</td>
-                <td>{{line.albumTitle}}</td>
-                <td>{{line.genre}}</td>
-                <td>{{line.avgrating}}</td>
-                <td><a href="/select_song/{{line.songID}}">{{line.songID}}</a></td>
-                
+                <th>Song Title</th>
+                <th>Artist Name</th>
+                <th>Album ID</th>
+                <th>Genre</th>
+                <th>Average Rating</th>
+                <th>Song ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in song_list %}
+            <tr>
+                <td>{{ line.title }}</td>
+                <td>{{ line.artistname }}</td>
+                <td>{{ line.albumid }}</td>
+                <td>{{ line.genre }}</td>
+                <td>{{ line.avgrating }}</td>
+                <td><a href="/select_song/{{ line.songid }}">{{ line.songid }}</a></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No results found.</td>
             </tr>
             {% endfor %}
+        </tbody>
     </table>
-    
-   
+
     <br>
-    <br>
-    Search for more songs:
+    <p>Search for more songs:</p>
     <form action="/songSearch" method="POST">
-        <input type="text" name="artist" placeholder="artist" /> </br>
-        <input type="text" name="genre" placeholder="genre" /></br>
-        <input type="text" name="rating" placeholder="avg rating" /></br>
-        <input type="submit" value=Search />
+        <input type="text" name="artist" placeholder="artist" /><br>
+        <input type="text" name="genre" placeholder="genre" /><br>
+        <input type="text" name="rating" placeholder="avg rating" /><br>
+        <input type="submit" value="Search" />
         {% if error %}
-        <p class="error"><strong>Error:</strong> {{error}}</p>
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
         {% endif %}
     </form>
     <br>
     <a href="/home">Return Home</a>
     <br>
     <a href="/login">Return to Login</a>
-
-
 </body>
-
 
 </html>
