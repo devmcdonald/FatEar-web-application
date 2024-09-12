@@ -93,7 +93,7 @@ def songSearch():
             SELECT song.title AS title, 
                 (artist.fname || ' ' || artist.lname) AS artistName, 
                 albumID, 
-                AVG(stars) AS avgrating, 
+                ROUND(AVG(stars), 2) AS avgrating, 
                 songID, 
                 genre 
             FROM ((((song 
@@ -109,46 +109,128 @@ def songSearch():
         cursor.execute(query, ("%" + artist + "%",))
 
     elif not artist and genre and not rating:
-        query = "SELECT song.title as title, concat(fname, ' ', lname) AS artistName, album.title as albumTitle, avg(stars) as avgrating, songID, genre \
-            FROM ((((song NATURAL JOIN artistperformssong) NATURAL JOIN artist) NATURAL JOIN songgenre) NATURAL JOIN songinalbum) join album using(albumID) join ratesong using(songID) \
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre \
-            HAVING genre = %s"
-        cursor.execute(query, (genre))
+        query = """
+            SELECT song.title AS title, 
+                (artist.fname || ' ' || artist.lname) AS artistName, 
+                albumID, 
+                ROUND(AVG(stars), 2) AS avgrating, 
+                songID, 
+                genre 
+            FROM ((((song 
+            NATURAL JOIN artistperformssong) 
+            NATURAL JOIN artist) 
+            NATURAL JOIN songgenre) 
+            NATURAL JOIN songinalbum) 
+            JOIN album USING(albumID) 
+            JOIN ratesong USING(songID) 
+            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            HAVING genre ILIKE %s
+            """
+        cursor.execute(query, ("%" + genre + "%",))
 
     elif not artist and not genre and rating:
-        query = "SELECT song.title as title, concat(fname, ' ', lname) AS artistName, album.title as albumTitle, avg(stars) as avgrating, songID, genre \
-            FROM ((((song NATURAL JOIN artistperformssong) NATURAL JOIN artist) NATURAL JOIN songgenre) NATURAL JOIN songinalbum) join album using(albumID) join ratesong using(songID) \
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre \
-            HAVING avg(stars) >= %s"
+        query = """
+            SELECT song.title AS title, 
+                (artist.fname || ' ' || artist.lname) AS artistName, 
+                albumID, 
+                ROUND(AVG(stars), 2) AS avgrating, 
+                songID, 
+                genre 
+            FROM ((((song 
+            NATURAL JOIN artistperformssong) 
+            NATURAL JOIN artist) 
+            NATURAL JOIN songgenre) 
+            NATURAL JOIN songinalbum) 
+            JOIN album USING(albumID) 
+            JOIN ratesong USING(songID) 
+            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            HAVING ROUND(AVG(stars), 2) >= %s
+            """
         cursor.execute(query, (rating))
 
     elif artist and genre and not rating:
-        query = "SELECT song.title as title, concat(fname, ' ', lname) AS artistName, album.title as albumTitle, avg(stars) as avgrating, songID, genre \
-            FROM ((((song NATURAL JOIN artistperformssong) NATURAL JOIN artist) NATURAL JOIN songgenre) NATURAL JOIN songinalbum) join album using(albumID) join ratesong using(songID) \
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre \
-            HAVING artistName like %s and genre = %s"
-        cursor.execute(query, ("%" + artist + "%", genre))
+        query = """
+            SELECT song.title AS title, 
+                (artist.fname || ' ' || artist.lname) AS artistName, 
+                albumID, 
+                ROUND(AVG(stars), 2) AS avgrating, 
+                songID, 
+                genre 
+            FROM ((((song 
+            NATURAL JOIN artistperformssong) 
+            NATURAL JOIN artist) 
+            NATURAL JOIN songgenre) 
+            NATURAL JOIN songinalbum) 
+            JOIN album USING(albumID) 
+            JOIN ratesong USING(songID) 
+            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and genre ILIKE %s
+        """
+        
+        cursor.execute(query, ("%" + artist + "%", "%" + genre + "%"))
 
     elif artist and not genre and rating:
-        query = "SELECT song.title as title, concat(fname, ' ', lname) AS artistName, album.title as albumTitle, avg(stars) as avgrating, songID, genre \
-            FROM ((((song NATURAL JOIN artistperformssong) NATURAL JOIN artist) NATURAL JOIN songgenre) NATURAL JOIN songinalbum) join album using(albumID) join ratesong using(songID) \
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre \
-            HAVING artistName like %s and rating >= %s"
+        query = """
+            SELECT song.title AS title, 
+                (artist.fname || ' ' || artist.lname) AS artistName, 
+                albumID, 
+                ROUND(AVG(stars), 2) AS avgrating, 
+                songID, 
+                genre 
+            FROM ((((song 
+            NATURAL JOIN artistperformssong) 
+            NATURAL JOIN artist) 
+            NATURAL JOIN songgenre) 
+            NATURAL JOIN songinalbum) 
+            JOIN album USING(albumID) 
+            JOIN ratesong USING(songID) 
+            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and ROUND(AVG(stars), 2) >= %s
+        """
+        
         cursor.execute(query, ("%" + artist + "%", rating))
 
     elif not artist and genre and rating:
-        query = "SELECT song.title as title, concat(fname, ' ', lname) AS artistName, album.title as albumTitle, avg(stars) as avgrating, songID, genre \
-            FROM ((((song NATURAL JOIN artistperformssong) NATURAL JOIN artist) NATURAL JOIN songgenre) NATURAL JOIN songinalbum) join album using(albumID) join ratesong using(songID) \
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre \
-            HAVING genre = %s and rating >= %s"
-        cursor.execute(query, (genre, rating))
+        query = """
+            SELECT song.title AS title, 
+                (artist.fname || ' ' || artist.lname) AS artistName, 
+                albumID, 
+                ROUND(AVG(stars), 2) AS avgrating, 
+                songID, 
+                genre 
+            FROM ((((song 
+            NATURAL JOIN artistperformssong) 
+            NATURAL JOIN artist) 
+            NATURAL JOIN songgenre) 
+            NATURAL JOIN songinalbum) 
+            JOIN album USING(albumID) 
+            JOIN ratesong USING(songID) 
+            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            HAVING genre ILIKE %s and ROUND(AVG(stars), 2) >= %s
+        """
+        
+        cursor.execute(query, ("%" + genre + "%", rating))
 
     elif artist and genre and rating:
-        query = "SELECT song.title as title, concat(fname, ' ', lname) AS artistName, album.title as albumTitle, avg(stars) as avgrating, songID, genre \
-            FROM ((((song NATURAL JOIN artistperformssong) NATURAL JOIN artist) NATURAL JOIN songgenre) NATURAL JOIN songinalbum) join album using(albumID) join ratesong using(songID) \
-            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre \
-            HAVING artistName like %s and genre = %s and avg(stars) >= %s"
-        cursor.execute(query, ("%" + artist + "%", genre, rating))
+        query = """
+            SELECT song.title AS title, 
+                (artist.fname || ' ' || artist.lname) AS artistName, 
+                albumID, 
+                ROUND(AVG(stars), 2) AS avgrating, 
+                songID, 
+                genre 
+            FROM ((((song 
+            NATURAL JOIN artistperformssong) 
+            NATURAL JOIN artist) 
+            NATURAL JOIN songgenre) 
+            NATURAL JOIN songinalbum) 
+            JOIN album USING(albumID) 
+            JOIN ratesong USING(songID) 
+            GROUP BY songID, artist.fname, artist.lname, title, albumID, genre 
+            HAVING (artist.fname || ' ' || artist.lname) ILIKE %s and genre ILIKE %s and ROUND(AVG(stars), 2) >= %s
+        """
+        
+        cursor.execute(query, ("%" + artist + "%", "%" + genre + "%", rating))
 
     else:
         if "username" in session:
