@@ -428,20 +428,27 @@ def home(error=None):
 def select_song(songID, error=None):
     # username = session["username"]
     cursor = conn.cursor()
-    query1 = "SELECT songID, song.title as title, concat(artist.fname, ' ', artist.lname) AS artistName, genre, releaseDate, songURL, album.title as albumTitle, avg(stars) as averageRating, artistID \
+    query1 = "SELECT songID, song.title as title, (artist.fname || ' ' || artist.lname) AS artistName, genre, releaseDate, songURL, album.title as albumTitle, ROUND(AVG(stars), 2) AS avgrating, artistID \
         FROM (((((song natural join songgenre) natural join artistperformssong) join artist using(artistID)) natural join songinalbum) join album using(albumID) )join ratesong using(songID)\
-        GROUP BY songID, title, artistName, genre, releaseDate, songURL, albumTitle, artistID \
+        GROUP BY songID, song.title, artistName, genre, releaseDate, songURL, albumTitle, artistID \
         HAVING songID = %s "
 
-    cursor.execute(query1, songID)
+    cursor.execute(query1, (songID,))
     songdata = cursor.fetchall()
-
+    # Convert song data into a list of dictionaries
+    song_columns = [desc[0] for desc in cursor.description]
+    songs = [dict(zip(song_columns, row)) for row in songdata]
+    
     query2 = "SELECT * FROM reviewsong WHERE songID = %s"
-    cursor.execute(query2, songID)
+    cursor.execute(query2, (songID,))
     reviews = cursor.fetchall()
+    
+    # Convert new songs into a list of dictionaries
+    review_columns = [desc[0] for desc in cursor.description]
+    review_data = [dict(zip(review_columns, row)) for row in reviews]
     cursor.close()
     return render_template(
-        "select_song.html", song_info=songdata, reviews=reviews, error=error
+        "select_song.html", song_info=songs, reviews=review_data, error=error
     )
 
 
