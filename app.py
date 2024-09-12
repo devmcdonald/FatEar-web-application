@@ -304,9 +304,10 @@ def registerAuth():
 
     # cursor used to send queries
     cursor = conn.cursor()
+    
     # executes query
     query = "SELECT * FROM users WHERE username = %s"
-    cursor.execute(query, (username))
+    cursor.execute(query, (username,))  # Note the comma to make it a single-item tuple
     # stores the results in a variable
     data = cursor.fetchone()
     # use fetchall() if you are expecting more than 1 data row
@@ -316,7 +317,7 @@ def registerAuth():
         error = "This user already exists"
         return render_template("register.html", error=error)
     else:
-        ins = "INSERT INTO user VALUES(%s, %s, %s, %s, %s, %s)"
+        ins = "INSERT INTO users (username, pwd, fname, lname, lastlogin, nickname) VALUES (%s, %s, %s, %s, %s, %s)"
         cursor.execute(ins, (username, hashed, fname, lname, date.today(), nickname))
         conn.commit()
         cursor.close()

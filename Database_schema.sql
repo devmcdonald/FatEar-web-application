@@ -1,5 +1,5 @@
 create table users (
-    username varchar(10) not null,
+    username varchar(20) not null,
     pwd varchar(15),
     fname varchar(20) not null,
     lname varchar(20) not null,
