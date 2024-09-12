@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
+import binascii
 
 # Start app
 app = Flask(__name__)
@@ -14,6 +15,7 @@ app = Flask(__name__)
 # Set environment variables - local development
 load_dotenv("secrets.env")
 SECRET_KEY = os.getenv("SECRET_KEY")
+app.secret_key = SECRET_KEY
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_USER = os.getenv("DB_USER")
@@ -262,46 +264,60 @@ def register():
     return render_template("register.html")
 
 
-# Authenticates the login
 @app.route("/loginAuth", methods=["GET", "POST"])
 def loginAuth():
     # grabs information from the forms
     username = request.form["username"]
-    password = request.form["password"].encode("utf-8")
+    password = request.form["password"].encode('utf-8')
 
     # cursor used to send queries
     cursor = conn.cursor()
+    
     # executes query
     query = "SELECT pwd FROM users WHERE username = %s"
-    cursor.execute(query, (username))
+    cursor.execute(query, (username,))
+    
     # stores the results in a variable
-    hashedPW = cursor.fetchone()
-    # use fetchall() if you are expecting more than 1 data row
+    result = cursor.fetchone()
     cursor.close()
+    
     error = None
-    if bcrypt.checkpw(password, hashedPW["pwd"].encode("utf-8")):
-        # creates a session for the the user
-        # session is a built in
-        session["username"] = username
-        return redirect(url_for("home"))
+    if result:
+        hashed_hex = result[0]  # fetchone() returns a tuple, so use index 0
+        
+        try:
+            # Convert the hex string back to bytes
+            stored_hash = binascii.unhexlify(hashed_hex)
+            
+            if bcrypt.checkpw(password, stored_hash):
+                # creates a session for the user
+                session["username"] = username
+                return redirect(url_for("home"))
+            else:
+                error = "Invalid password"
+        except ValueError as ve:
+            print(f"ValueError: {ve}")  # Debug print
+            error = "An error occurred. Please try again."
     else:
-        # returns an error message to the html page
-        error = "Invalid login or username"
-        return render_template("login.html", error=error)
+        error = "Invalid username"
+    
+    return render_template("login.html", error=error)
 
 
-# Authenticates the register
 @app.route("/registerAuth", methods=["GET", "POST"])
 def registerAuth():
     # grabs information from the forms
     username = request.form["username"]
-    password = request.form["password"].encode("utf-8")
+    password = request.form["password"].encode('utf-8')
     fname = request.form["fname"]
     lname = request.form["lname"]
     nickname = request.form["nickname"]
 
-    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
-
+    # Salt and hash password
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password, salt)
+    hashed_hex = binascii.hexlify(hashed).decode('utf-8')  # Convert to hex string for storage
+    
     # cursor used to send queries
     cursor = conn.cursor()
     
@@ -318,7 +334,7 @@ def registerAuth():
         return render_template("register.html", error=error)
     else:
         ins = "INSERT INTO users (username, pwd, fname, lname, lastlogin, nickname) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(ins, (username, hashed, fname, lname, date.today(), nickname))
+        cursor.execute(ins, (username, hashed_hex, fname, lname, date.today(), nickname))
         conn.commit()
         cursor.close()
         return render_template("index.html")

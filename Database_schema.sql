@@ -1,6 +1,6 @@
 create table users (
     username varchar(20) not null,
-    pwd varchar(15),
+    pwd text,
     fname varchar(20) not null,
     lname varchar(20) not null,
     lastlogin date, 
