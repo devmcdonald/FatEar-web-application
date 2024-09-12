@@ -511,40 +511,43 @@ def rate_song():
 def curr_friends():
     username = session["username"]
     cursor = conn.cursor()
-    query0 = " SET @myvar = %s;"
     query = "select F.user2 as username \
 		from friend as F \
-		where F.user1 = @myvar and F.acceptStatus = 'Accepted'  \
+		where F.user1 = %s and F.acceptStatus = 'Accepted'  \
 		UNION distinct \
 		select S.user1 as username \
 		from friend as S \
-		where S.user2 = @myvar and S.acceptStatus = 'Accepted'"
-    cursor.execute(query0, (username))
-    placeholder = cursor.fetchall()
-    cursor.execute(query, (placeholder))
+		where S.user2 = %s and S.acceptStatus = 'Accepted'"
+
+    cursor.execute(query, (username, username,))
     data = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    friends = [dict(zip(columns, row)) for row in data]
+    
     cursor.close()
-    return render_template("curr_friends.html", username=username, friendlist=data)
+    return render_template("curr_friends.html", username=username, friendlist=friends)
 
 
 @app.route("/pending_requests")
 def pending_requests():
     username = session["username"]
     cursor = conn.cursor()
-    query0 = " SET @myvar = %s;"
     query = "select user1 as requester \
 	    from friend \
-	    where user2 = @myvar and acceptStatus = 'Pending' and requestSentBy = user1 \
+	    where user2 = %s and acceptStatus = 'Pending' and requestSentBy = user1 \
 	    UNION \
 	    select user2 as requester \
 	    from friend \
-	    where user1 = @myvar and acceptStatus = 'Pending' and requestSentBy = user2"
-    cursor.execute(query0, (username))
-    placeholder = cursor.fetchall()
-    cursor.execute(query, (placeholder))
+	    where user1 = %s and acceptStatus = 'Pending' and requestSentBy = user2"
+
+    cursor.execute(query, (username, username,))
     data = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    friends = [dict(zip(columns, row)) for row in data]
     cursor.close()
-    return render_template("pending_requests.html", username=username, requests=data)
+    return render_template("pending_requests.html", username=username, requests=friends)
 
 
 @app.route("/accept_req/<user>")
