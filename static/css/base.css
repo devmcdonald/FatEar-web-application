@@ -1,23 +1,7 @@
-/* Global Styles */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #e9ecef;
-    color: #343a40;
-    margin: 0;
-    padding: 0;
-    display: flex;
-}
-
-.container {
-    margin-left: 220px; /* Width of the sidebar */
-    padding: 20px;
-    flex: 1;
-}
-
 /* Sidebar Styles */
 .sidebar {
     width: 200px;
-    background-color: #343a40;
+    background-color: #002f6c; /* Navy blue */
     color: #fff;
     position: fixed;
     top: 0;
@@ -27,33 +11,39 @@ body {
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal scroll */
 }
 
 .sidebar h2 {
-    color: #f8f9fa;
+    color: #e0e0e0; /* Light grey */
     font-size: 1.5em;
     margin-top: 0;
     margin-bottom: 20px;
 }
 
 .sidebar .btn {
-    background-color: #495057;
-    color: #f8f9fa;
+    background-color: #004080; /* Darker navy blue */
+    color: #e0e0e0;
     border: none;
     padding: 12px 20px;
     margin-bottom: 10px;
     border-radius: 4px;
     cursor: pointer;
-    text-align: center;
+    text-align: left;
     text-decoration: none;
-    display: block;
+    display: flex;
+    align-items: center;
     font-size: 1em;
     transition: background-color 0.3s ease;
 }
 
+.sidebar .btn i {
+    margin-right: 10px; /* Space between icon and text */
+}
+
 .sidebar .btn:hover {
-    background-color: #6c757d;
+    background-color: #003366; /* Even darker navy blue */
 }
 
 .sidebar .search-form {
@@ -74,8 +64,8 @@ body {
 }
 
 .search-form input[type="submit"] {
-    background-color: #495057;
-    color: #f8f9fa;
+    background-color: #004080; /* Darker navy blue */
+    color: #e0e0e0;
     border: none;
     padding: 10px;
     border-radius: 4px;
@@ -86,28 +76,47 @@ body {
 }
 
 .search-form input[type="submit"]:hover {
-    background-color: #343a40;
+    background-color: #003366; /* Even darker navy blue */
 }
 
 .sidebar .logout-btn {
-    margin-top: auto;
-    background-color: #dc3545;
+    margin-top: auto; /* Moves the button to the bottom */
+    margin-bottom: 20px; /* Adds space between the button and the bottom of the sidebar */
+    background-color: #cc0000; /* Red */
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 1em;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sidebar .logout-btn i {
+    margin-right: 10px; /* Space between icon and text */
 }
 
 .sidebar .logout-btn:hover {
-    background-color: #c82333;
+    background-color: #a30000; /* Darker red */
 }
 
 /* Main Content Styles */
+.container {
+    margin-left: 220px; /* Offset for sidebar width plus padding */
+    padding: 20px;
+    overflow: hidden;
+}
+
 h1, h2 {
-    color: #343a40;
+    color: #002f6c; /* Navy blue */
     margin-top: 0;
 }
 
 h1 {
     font-size: 2.5em;
     margin-bottom: 0.5em;
-    border-bottom: 3px solid #495057;
+    border-bottom: 3px solid #004080; /* Darker navy blue */
     padding-bottom: 0.5em;
 }
 
@@ -133,8 +142,8 @@ th, td {
 }
 
 th {
-    background-color: #495057;
-    color: #f8f9fa;
+    background-color: #002f6c; /* Navy blue */
+    color: #fff;
 }
 
 tr:nth-child(even) {
@@ -142,17 +151,10 @@ tr:nth-child(even) {
 }
 
 a {
-    color: #007bff;
+    color: #004080; /* Darker navy blue */
     text-decoration: none;
 }
 
 a:hover {
     text-decoration: underline;
-}
-
-/* Error Message */
-.error {
-    color: #dc3545;
-    font-weight: bold;
-    margin: 20px 0;
 }

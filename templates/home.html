@@ -1,110 +1,70 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <link rel="stylesheet" href="static/css/home.css">
-</head>
+{% block content %}
+    <h1>Welcome {{ realname.fname }} {{ realname.lname }}</h1>
+    <p>Username: {{ username }}</p>
 
-<body>
+    <h2>Activity since your last visit:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Friend or Followed User</th>
+                <th>Album Name</th>
+                <th>Song ID</th>
+                <th>Title</th>
+                <th>Review</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in reviews %}
+            <tr>
+                <td>{{ line.username }}</td>
+                <td>{{ line.albumname }}</td>
+                <td>
+                    {% if line.songid %}
+                        <a href="/select_song/{{ line.songid }}">{{ line.songid }}</a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>{{ line.title }}</td>
+                <td>{{ line.reviewtext }}</td>
+                <td>{{ line.reviewdate }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No reviews found since your last visit.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <div class="sidebar">
-        <h2>Navigation</h2>
-        <a href="/curr_friends" class="btn">My Friends</a>
-        <a href="/followed_artists" class="btn">My Followed Artists</a>
-        <a href="/pending_requests" class="btn">Pending Requests</a>
+    <h2>New songs from your favorite artists:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Artist</th>
+                <th>Song ID</th>
+                <th>Song Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in newsongs %}
+            <tr>
+                <td>{{ line.artistname }}</td>
+                <td><a href="/select_song/{{ line.songid }}">{{ line.songid }}</a></td>
+                <td>{{ line.title }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No new songs found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        <div class="search-form">
-            <h2>Search Features</h2>
-            <form action="/songSearch" method="POST">
-                <input type="text" name="artist" placeholder="Artist" />
-                <input type="text" name="genre" placeholder="Genre" />
-                <input type="text" name="rating" placeholder="Min Rating" />
-                <input type="submit" value="Search Songs" />
-            </form>
-
-            <form action="/search_users" method="GET">
-                <input type="text" name="user" placeholder="Username or Name" />
-                <input type="submit" value="Search Users" />
-            </form>
-
-            <form action="/search_artists" method="GET">
-                <input type="text" name="search" placeholder="Artist Name or ID" />
-                <input type="submit" value="Search Artists" />
-            </form>
-        </div>
-
-        <a href="/logout" class="btn logout-btn">Logout</a>
-    </div>
-
-    <div class="container">
-        <h1>Welcome {{realname.fname}} {{realname.lname}}</h1>
-        <p>Username: {{username}}</p>
-
-        <h2>Activity since your last visit:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Friend or Followed User</th>
-                    <th>Album Name</th>
-                    <th>Song ID</th>
-                    <th>Title</th>
-                    <th>Review</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in reviews %}
-                <tr>
-                    <td>{{ line.username }}</td>
-                    <td>{{ line.albumname }}</td>
-                    <td>
-                        {% if line.songid %}
-                            <a href="/select_song/{{ line.songid }}">{{ line.songid }}</a>
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </td>
-                    <td>{{ line.title }}</td>
-                    <td>{{ line.reviewtext }}</td>
-                    <td>{{ line.reviewdate }}</td>
-                </tr>
-                {% else %}
-        <tr>
-            <td colspan="6">No reviews found since your last visit.</td>
-        </tr>
-        {% endfor %}
-            </tbody>
-        </table>
-
-        <h2>New songs from your favorite artists:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Artist</th>
-                    <th>Song ID</th>
-                    <th>Song Title</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in newsongs %}
-                <tr>
-                    <td>{{ line.artistname }}</td>
-                    <td><a href="/select_song/{{ line.songid }}">{{ line.songid }}</a></td>
-                    <td>{{ line.title }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3">No new songs found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}</p>
-        {% endif %}
-    </div>
-
-</body>
-
-</html>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
+{% endblock %}
