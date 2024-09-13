@@ -59,6 +59,11 @@ h1, h2, h3, h4, p {
     transition: background-color 0.3s ease;
 }
 
+.sidebar h3 {
+    color: #002f6c; /* Navy blue */
+    text-shadow: none; /* Remove text outline */
+}
+
 .sidebar .btn i {
     margin-right: 10px; /* Space between icon and text */
 }
@@ -70,7 +75,42 @@ h1, h2, h3, h4, p {
 .sidebar .search-form {
     margin-top: 20px;
 }
+/* General Search Form Styles */
+.search-section {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #004080; /* Navy blue border */
+    border-radius: 5px;
+    background-color: #f0f0f0; /* Light background for each form */
+    color: #002f6c; /* Navy blue text */
+}
 
+.search-section h3 {
+    color: #002f6c; /* Navy blue */
+    margin-bottom: 10px;
+}
+
+.search-section input[type="text"] {
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.search-section input[type="submit"] {
+    background-color: #002f6c; /* Navy blue */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-section input[type="submit"]:hover {
+    background-color: #004080; /* Darker navy blue */
+}
 .search-form form {
     margin-bottom: 20px;
 }
@@ -129,11 +169,13 @@ h1, h2, h3, h4, p {
     overflow: hidden;
 }
 
+/* General Header Styles */
 h1, h2, h3 {
     color: #ffffff; /* Navy blue */
     margin-top: 0;
 }
 
+/* Specific Header Styles */
 h1 {
     font-size: 2.5em;
     margin-bottom: 0.5em;
@@ -143,6 +185,11 @@ h1 {
 
 h2 {
     font-size: 1.75em;
+    margin-bottom: 0.5em;
+}
+
+h3 {
+    font-size: 1em;
     margin-bottom: 0.5em;
 }
 
