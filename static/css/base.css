@@ -1,3 +1,24 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('/static/background.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #ffffff; /* White text color */
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+h1, h2, h3, h4, p {
+    color: #ffffff; /* White text color */
+    -webkit-text-stroke: 0.5px black; /* Lighter black outline for WebKit browsers */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Softer black shadow */
+}
 /* Sidebar Styles */
 .sidebar {
     width: 200px;
@@ -109,7 +130,7 @@
 }
 
 h1, h2, h3 {
-    color: #002f6c; /* Navy blue */
+    color: #ffffff; /* Navy blue */
     margin-top: 0;
 }
 
@@ -126,9 +147,9 @@ h2 {
 }
 
 h3.username {
-    font-size: 1.25em;
-    margin-top: 0.25em;
-    color: #004080; /* Darker navy blue */
+    color: #ffffff !important; /* Ensure it's white and override previous navy blue */
+    -webkit-text-stroke: 0.5px black; /* Add the same subtle black outline */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Softer shadow effect */
 }
 
 /* Button Styles */
@@ -164,20 +185,24 @@ th, td {
     padding: 12px;
     text-align: left;
     border: 1px solid #dee2e6;
+    color: #002f6c; /* Navy blue text inside tables */
 }
 
 th {
-    background-color: #002f6c; /* Navy blue */
-    color: #fff;
+    background-color: #002f6c; /* Navy blue background for table headers */
+    color: #fff; /* White text in table headers */
 }
 
 tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
+/* Updated Link Styles */
 a {
-    color: #004080; /* Darker navy blue */
+    color: #002f6c; /* Navy blue text color for links */
     text-decoration: none;
+    -webkit-text-stroke: none; /* Remove text outline from links */
+    text-shadow: none; /* Remove text shadow from links */
 }
 
 a:hover {
