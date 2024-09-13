@@ -34,10 +34,10 @@ Nickname: {{line.nickname}}
 
         {% for line in artistResults %}
         <tr>
-            <td>{{line.artistID}}</td>
-            <td><a href="/artist/{{line.artistID}}">{{line.artistName}}</a></td>
-            <td>{{line.artistBio}}</td>
-            <td>{{line.artistURL}}</td>
+            <td>{{line.artistid}}</td>
+            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
+            <td>{{line.artistbio}}</td>
+            <td>{{line.artisturl}}</td>
         </tr>
         {% endfor %}
     </table>
@@ -53,11 +53,11 @@ Nickname: {{line.nickname}}
 
         {% for line in songRatings %}
         <tr>
-            <td>{{line.songID}}</td>
-            <td><a href="/select_song/{{line.songID}}">{{line.title}}</a></td>
+            <td>{{line.songid}}</td>
+            <td><a href="/select_song/{{line.songid}}">{{line.title}}</a></td>
             <td>{{line.stars}}</td>
-            <td>{{line.ratingDate}}</td>
-            <td><a href="/artist/{{line.artistID}}">{{line.artistName}}</a></td>
+            <td>{{line.ratingdate}}</td>
+            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
         </tr>
         {% endfor %}
     </table>
@@ -71,10 +71,10 @@ Nickname: {{line.nickname}}
 
         {% for line in albumRatings %}
         <tr>
-            <td>{{line.albumID}}</td>
+            <td>{{line.albumid}}</td>
             <td>{{line.title}}</td>
             <td>{{line.stars}}</td>
-            <td><a href="/artist/{{line.artistID}}">{{line.artistName}}</a></td>
+            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
         </tr>
         {% endfor %}
     </table>
@@ -90,11 +90,11 @@ Nickname: {{line.nickname}}
 
         {% for line in songReviews %}
         <tr>
-            <td>{{line.songID}}</td>
-            <td><a href="/select_song/{{line.songID}}">{{line.title}}</a></td>
-            <td>{{line.reviewText}}</td>
-            <td>{{line.reviewDate}}</td>
-            <td><a href="/artist/{{line.artistID}}">{{line.artistName}}</a></td>
+            <td>{{line.songid}}</td>
+            <td><a href="/select_song/{{line.songid}}">{{line.title}}</a></td>
+            <td>{{line.reviewtext}}</td>
+            <td>{{line.reviewdate}}</td>
+            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
         </tr>
         {% endfor %}
     </table>
@@ -108,10 +108,10 @@ Nickname: {{line.nickname}}
 
         {% for line in albumReviews %}
         <tr>
-            <td>{{line.albumID}}</td>
-            <td>{{line.albumTitle}}</td>
-            <td>{{line.reviewText}}</td>
-            <td><a href="/artist/{{line.artistID}}">{{line.artistName}}</a></td>
+            <td>{{line.albumid}}</td>
+            <td>{{line.albumtitle}}</td>
+            <td>{{line.reviewtext}}</td>
+            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
         </tr>
         {% endfor %}
     </table>

@@ -647,37 +647,51 @@ def followed_artists():
     username = session["username"]
     cursor = conn.cursor()
 
-    query = "select artistID, concat(fname, ' ', lname) AS artistName, artistBio, artistURL\
+    query = "select artistID, (artist.fname || ' ' || artist.lname) AS artistName, artistBio, artistURL\
 		from userfanofartist NATURAL JOIN artist \
 		where username = %s"
 
-    cursor.execute(query, (username))
+    cursor.execute(query, (username,))
     data = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    artists = [dict(zip(columns, row)) for row in data]
+    
     cursor.close()
-    return render_template("followed_artists.html", username=username, artistList=data)
+    return render_template("followed_artists.html", username=username, artistList=artists)
 
 
 @app.route("/artist/<artistID>")
 def artist(artistID, error=None):
     cursor = conn.cursor()
-    songQuery = "SELECT songID, title, releaseDate, genre, avg(stars) AS averageRating FROM artistperformssong NATURAL JOIN song NATURAL JOIN songgenre NATURAL JOIN ratesong GROUP BY songID, title, releaseDate, genre, artistID HAVING artistID = %s"
-    cursor.execute(songQuery, (artistID))
+    songQuery = "SELECT songID, song.title AS title, releaseDate, genre, ROUND(AVG(stars), 2) AS avgrating FROM artistperformssong NATURAL JOIN song NATURAL JOIN songgenre NATURAL JOIN ratesong GROUP BY songID, title, releaseDate, genre, artistID HAVING artistID = %s"
+    cursor.execute(songQuery, (artistID,))
     songResults = cursor.fetchall()
 
-    albumQuery = "SELECT albumID, album.title as title, avg(stars) AS averageRating FROM artistperformssong NATURAL JOIN song NATURAL JOIN songinalbum JOIN album using(albumID) NATURAL JOIN ratealbum GROUP BY albumID, title, artistID HAVING artistID = %s"
-    cursor.execute(albumQuery, (artistID))
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    songs = [dict(zip(columns, row)) for row in songResults]
+    
+    albumQuery = "SELECT albumID, album.title as title, ROUND(AVG(stars), 2) AS avgrating FROM artistperformssong NATURAL JOIN song NATURAL JOIN songinalbum JOIN album using(albumID) NATURAL JOIN ratealbum GROUP BY albumID, album.title, artistID HAVING artistID = %s"
+    cursor.execute(albumQuery, (artistID,))
     albumResults = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    albums = [dict(zip(columns, row)) for row in albumResults]
 
-    artistQuery = "SELECT concat(fname, ' ', lname) AS artistName, artistBio, artistURL, artistID FROM artist WHERE artistID=%s"
-    cursor.execute(artistQuery, (artistID))
+    artistQuery = "SELECT (artist.fname || ' ' || artist.lname) AS artistName, artistBio, artistURL, artistID FROM artist WHERE artistID=%s"
+    cursor.execute(artistQuery, (artistID,))
     artistResults = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    artists = [dict(zip(columns, row)) for row in artistResults]
 
     cursor.close()
     return render_template(
         "artist.html",
-        songResults=songResults,
-        albumResults=albumResults,
-        artistResults=artistResults,
+        songResults=songs,
+        albumResults=albums,
+        artistResults=artists,
         error=error,
     )
 
@@ -713,11 +727,14 @@ def search_artists():
     username = session["username"]
     search = request.args["search"]
     cursor = conn.cursor()
-    query = "SELECT artistID, concat(fname, ' ', lname) AS artistName FROM artist WHERE artistID like %s OR concat(fname, ' ', lname) like %s"
+    query = "SELECT artistID, (artist.fname || ' ' || artist.lname) AS artistName FROM artist WHERE artistID like %s OR (artist.fname || ' ' || artist.lname) like %s"
     cursor.execute(query, ("%" + search + "%", "%" + search + "%"))
     data = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    artists = [dict(zip(columns, row)) for row in data]
     if data:
-        return render_template("searched_artists.html", result=data)
+        return render_template("searched_artists.html", result=artists)
     else:
         error = "No artists found"
         return home(error)
@@ -730,36 +747,54 @@ def user(user, error=None):
     userQuery = "SELECT username, concat(fname, ' ', lname) as name, lastlogin, nickname FROM users WHERE username = %s"
     cursor.execute(userQuery, (user,))
     userInfo = cursor.fetchall()
-
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    myInfo = [dict(zip(columns, row)) for row in userInfo]
+    
     artistQuery = "SELECT artistID, concat(fname, ' ', lname) as artistName, artistBio, artistURL FROM userfanofartist NATURAL JOIN artist WHERE username = %s"
     cursor.execute(artistQuery, (user,))
     artistResults = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    artists = [dict(zip(columns, row)) for row in artistResults]
 
     songRatingQuery = "SELECT songID, stars, ratingDate, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM ratesong NATURAL JOIN song NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
     cursor.execute(songRatingQuery, (user,))
     songRatings = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    songsRat = [dict(zip(columns, row)) for row in songRatings]
 
     songReviewQuery = "SELECT songID, reviewText, reviewDate, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM reviewsong NATURAL JOIN song NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
     cursor.execute(songReviewQuery, (user,))
     songReviews = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    songsRev = [dict(zip(columns, row)) for row in songReviews]
 
     albumRatingQuery = "SELECT albumID, stars, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM ratealbum NATURAL JOIN album NATURAL JOIN songinalbum NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
     cursor.execute(albumRatingQuery, (user,))
     albumRatings = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    albumRats = [dict(zip(columns, row)) for row in albumRatings]
 
     albumReviewQuery = "SELECT albumID, reviewText, reviewDate, album.title as albumTitle, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM reviewalbum NATURAL JOIN album NATURAL JOIN songinalbum NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
     cursor.execute(albumReviewQuery, (user,))
     albumReviews = cursor.fetchall()
+    # Convert into a list of dictionaries
+    columns = [desc[0] for desc in cursor.description]
+    albumRevs = [dict(zip(columns, row)) for row in albumReviews]
 
     cursor.close()
     return render_template(
         "user.html",
-        userInfo=userInfo,
-        artistResults=artistResults,
-        songRatings=songRatings,
-        songReviews=songReviews,
-        albumRatings=albumRatings,
-        albumReviews=albumReviews,
+        userInfo=myInfo,
+        artistResults=artists,
+        songRatings=songsRat,
+        songReviews=songsRev,
+        albumRatings=albumRats,
+        albumReviews=albumRevs,
         error=error,
     )
 

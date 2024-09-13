@@ -1,7 +1,7 @@
 <html>
     {% for line in artistResults %}
 <head>
-    <h1>{{line.artistName}}</h1>
+    <h1>{{line.artistname}}</h1>
     
 </head>
 <br>
@@ -13,12 +13,12 @@
             border: 1px solid black;
         }
     </style>
-    Bio: {{line.artistBio}}
+    Bio: {{line.artistbio}}
     <br>
-    URL: {{line.artistURL}}
+    URL: {{line.artisturl}}
     <br>
     <br>
-    Songs by {{line.artistName}}:
+    Songs by {{line.artistname}}:
     {% endfor %}
     <table>
         <th>songID</th>
@@ -30,19 +30,19 @@
 
         {% for line in songResults %}
         <tr>
-            <td>{{line.songID}}</td>
+            <td>{{line.songid}}</td>
             <td>{{line.title}}</td>
             <td>{{line.genre}}</td>
-            <td>{{line.releaseDate}}</td>
-            <td>{{line.averageRating}}</td>
-            <td><a href="/select_song/{{line.songID}}">Song Page</a></td>
+            <td>{{line.releasedate}}</td>
+            <td>{{line.avgrating}}</td>
+            <td><a href="/select_song/{{line.songid}}">Song Page</a></td>
         </tr>
         {% endfor %}
     </table>
     <br>
     <br>
     {% for line in artistResults %}
-    Albums by {{line.artistName}}:
+    Albums by {{line.artistname}}:
     {% endfor %}
     <table>
         <th>albumID</th>
@@ -51,15 +51,15 @@
 
         {% for line in albumResults %}
         <tr>
-            <td>{{line.albumID}}</td>
+            <td>{{line.albumid}}</td>
             <td>{{line.title}}</td>
-            <td>{{line.averageRating}}</td>
+            <td>{{line.avgrating}}</td>
         </tr>
         {% endfor %}
     </table>
     <br>
     {% for line in artistResults %}
-    <a href="/become_fan/{{line.artistID}}">Become Fan</a>
+    <a href="/become_fan/{{line.artistid}}">Become Fan</a>
     {% endfor %}
     <br>
     {% if error %}
