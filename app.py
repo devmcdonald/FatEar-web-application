@@ -13,7 +13,7 @@ import binascii
 app = Flask(__name__)
 
 # Set environment variables - local development
-
+"""
 load_dotenv("secrets.env")
 SECRET_KEY = os.getenv("SECRET_KEY")
 app.secret_key = SECRET_KEY
@@ -34,7 +34,7 @@ DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
 DB_NAME = os.environ.get("DB_NAME")
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
-"""
+
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 ALLOWED_EXTENSIONS = set(["png", "jpg", "jpeg", "gif"])
