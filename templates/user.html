@@ -1,138 +1,141 @@
-<html>
-{% for line in userInfo %}
+{% extends 'base.html' %}
 
-<head>
-    <h1>{{line.name}}</h1>
-
-</head>
-Username: {{line.username}}
-<br>
-Last Login: {{line.lastlogin}}
-<br>
-Nickname: {{line.nickname}}
-{% endfor %}
-<br>
-
-<body>
-    <style type="text/css">
-        table,
-        th,
-        td {
-            border: 1px solid black;
-        }
-    </style>
-
-    <br>
-    <br>
-    Fans of:
-
-    <table>
-        <th>artistID</th>
-        <th>Artist Name</th>
-        <th>Bio</th>
-        <th>URL</th>
-
-        {% for line in artistResults %}
-        <tr>
-            <td>{{line.artistid}}</td>
-            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
-            <td>{{line.artistbio}}</td>
-            <td>{{line.artisturl}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    <br>
-    Song Ratings:
-    <table>
-        <th>songID</th>
-        <th>Song Title</th>
-        <th>Rating</th>
-        <th>Rating Date</th>
-        <th>Artist Name</th>
-
-        {% for line in songRatings %}
-        <tr>
-            <td>{{line.songid}}</td>
-            <td><a href="/select_song/{{line.songid}}">{{line.title}}</a></td>
-            <td>{{line.stars}}</td>
-            <td>{{line.ratingdate}}</td>
-            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    Album Ratings:
-    <table>
-        <th>albumID</th>
-        <th>Album Title</th>
-        <th>Rating</th>
-        <th>Artist Name</th>
-
-        {% for line in albumRatings %}
-        <tr>
-            <td>{{line.albumid}}</td>
-            <td>{{line.title}}</td>
-            <td>{{line.stars}}</td>
-            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-
-    Song Reviews:
-    <table>
-        <th>songID</th>
-        <th>Song Title</th>
-        <th>Review</th>
-        <th>Review Date</th>
-        <th>Artist Name</th>
-
-        {% for line in songReviews %}
-        <tr>
-            <td>{{line.songid}}</td>
-            <td><a href="/select_song/{{line.songid}}">{{line.title}}</a></td>
-            <td>{{line.reviewtext}}</td>
-            <td>{{line.reviewdate}}</td>
-            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    Album Reviews:
-    <table>
-        <th>albumID</th>
-        <th>Album Title</th>
-        <th>Review</th>
-        <th>Artist Name</th>
-
-        {% for line in albumReviews %}
-        <tr>
-            <td>{{line.albumid}}</td>
-            <td>{{line.albumtitle}}</td>
-            <td>{{line.reviewtext}}</td>
-            <td><a href="/artist/{{line.artistid}}">{{line.artistname}}</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    <br>
+{% block content %}
     {% for line in userInfo %}
-    <button onclick="location.href='/follow/{{line.username}}'">Follow</button>
-    <br>
-    <button onclick="location.href='/send_req/{{line.username}}'">Send Friend Request</button>
+        <h1>{{ line.name }}</h1>
+        <p>Username: {{ line.username }}</p>
+        <p>Last Login: {{ line.lastlogin }}</p>
+        <p>Nickname: {{ line.nickname }}</p>
     {% endfor %}
+
+    <h2>Fans of:</h2>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th>Artist ID</th>
+                <th>Artist Name</th>
+                <th>Bio</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in artistResults %}
+            <tr>
+                <td>{{ line.artistid }}</td>
+                <td><a href="/artist/{{ line.artistid }}">{{ line.artistname }}</a></td>
+                <td>{{ line.artistbio }}</td>
+                <td><a href="{{ line.artisturl }}" target="_blank">{{ line.artisturl }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     <br>
+
+    <h2>Song Ratings:</h2>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th>Song ID</th>
+                <th>Song Title</th>
+                <th>Rating</th>
+                <th>Rating Date</th>
+                <th>Artist Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in songRatings %}
+            <tr>
+                <td>{{ line.songid }}</td>
+                <td><a href="/select_song/{{ line.songid }}">{{ line.title }}</a></td>
+                <td>{{ line.stars }}</td>
+                <td>{{ line.ratingdate }}</td>
+                <td><a href="/artist/{{ line.artistid }}">{{ line.artistname }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+
+    <h2>Album Ratings:</h2>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th>Album ID</th>
+                <th>Album Title</th>
+                <th>Rating</th>
+                <th>Artist Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in albumRatings %}
+            <tr>
+                <td>{{ line.albumid }}</td>
+                <td>{{ line.title }}</td>
+                <td>{{ line.stars }}</td>
+                <td><a href="/artist/{{ line.artistid }}">{{ line.artistname }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+
+    <h2>Song Reviews:</h2>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th>Song ID</th>
+                <th>Song Title</th>
+                <th>Review</th>
+                <th>Review Date</th>
+                <th>Artist Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in songReviews %}
+            <tr>
+                <td>{{ line.songid }}</td>
+                <td><a href="/select_song/{{ line.songid }}">{{ line.title }}</a></td>
+                <td>{{ line.reviewtext }}</td>
+                <td>{{ line.reviewdate }}</td>
+                <td><a href="/artist/{{ line.artistid }}">{{ line.artistname }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+
+    <h2>Album Reviews:</h2>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th>Album ID</th>
+                <th>Album Title</th>
+                <th>Review</th>
+                <th>Artist Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in albumReviews %}
+            <tr>
+                <td>{{ line.albumid }}</td>
+                <td>{{ line.albumtitle }}</td>
+                <td>{{ line.reviewtext }}</td>
+                <td><a href="/artist/{{ line.artistid }}">{{ line.artistname }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+
+    <div class="button-group">
+        {% for line in userInfo %}
+        <button class="action-button" onclick="location.href='/follow/{{line.username}}'">Follow</button>
+        <button class="action-button" onclick="location.href='/send_req/{{line.username}}'">Send Friend Request</button>
+        {% endfor %}
+    </div>
+    <br>
+
     {% if error %}
-    <p class="error"><strong>Error:</strong> {{error}}</p>
+    <p class="error"><strong>Error:</strong> {{ error }}</p>
     {% endif %}
-    <br>
-    <a href="/home">Return Home</a>
-    <br>
-    <a href="/logout">Logout</a>
-
-
-</body>
-
-
-</html>
+{% endblock %}

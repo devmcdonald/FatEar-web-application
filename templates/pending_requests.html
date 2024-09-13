@@ -1,22 +1,14 @@
-<html>
+{% extends 'base.html' %}
 
+{% block content %}
 <head>
+    <h1>My Friend Requests</h1>
 </head>
 
 <body>
 
-    <style type="text/css">
-        table,
-        th,
-        td {
-            border: 1px solid black;
-        }
-    </style>
-
-    Your Friendship Requests:
-
     <table>
-        <th>username</th>
+        <th>Username</th>
         <th>Accept Request</th>
         <th>Deny Request</th>
 
@@ -29,14 +21,9 @@
         {% endfor %}
     </table>
 
-    <br>
-    <br>
-    <a href="/home">Return Home</a>
-    <br>
-    <br>
-    <a href="/logout">Logout</a>
 
 </body>
 
 
-</html>
+
+{% endblock %}

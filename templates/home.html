@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Welcome {{ realname.fname }} {{ realname.lname }}</h1>
-    <p>Username: {{ username }}</p>
+    <div class="welcome-section">
+        <h1>Welcome {{ realname.fname }} {{ realname.lname }}</h1>
+        <h3 class="username">Username: {{ username }}</h3>
+    </div>
 
     <h2>Activity since your last visit:</h2>
     <table>

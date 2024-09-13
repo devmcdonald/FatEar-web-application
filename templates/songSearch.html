@@ -1,24 +1,11 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
 
+{% block content %}
 <head>
-    <style type="text/css">
-        table,
-        th,
-        td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
+    <h1>Songs fitting your search</h1>
 </head>
 
 <body>
-
-    <p>Here are songs fitting your search:</p>
 
     <table>
         <thead>
@@ -50,20 +37,6 @@
     </table>
 
     <br>
-    <p>Search for more songs:</p>
-    <form action="/songSearch" method="POST">
-        <input type="text" name="artist" placeholder="artist" /><br>
-        <input type="text" name="genre" placeholder="genre" /><br>
-        <input type="text" name="rating" placeholder="avg rating" /><br>
-        <input type="submit" value="Search" />
-        {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}</p>
-        {% endif %}
-    </form>
-    <br>
-    <a href="/home">Return Home</a>
-    <br>
-    <a href="/login">Return to Login</a>
+    
 </body>
-
-</html>
+{% endblock %}

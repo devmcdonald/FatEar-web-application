@@ -1,4 +1,6 @@
-<html>
+{% extends 'base.html' %}
+
+{% block content %}
 
 <head>
     {% for line in song_info %}
@@ -7,13 +9,7 @@
 </head>
 
 <body>
-    <style type="text/css">
-        table,
-        th,
-        td {
-            border: 1px solid black;
-        }
-    </style>
+    
     <table>
         <th>songID</th>
         <th>Title</th>
@@ -39,7 +35,7 @@
     </table>
     <br>
     <br>
-    User Reviews:
+    <h2>User Reviews</h2>
     <table>
         <th>Username</th>
         <th>Review</th>
@@ -56,44 +52,38 @@
     <br>
 
     {% for line in song_info %}
-    Write a review:
-    <form action="/post" method="POST">
-        <input type="text" name="reviewText" placeholder="Review" required></input> </br>
-        <input type="hidden" name="songID" value={{line.songid}}></input>
-        <input type="submit" name="Submit" value="Submit" />
-        {% endfor %}
+    <h2>Write a Review:</h2>
+    <form action="/post" method="POST" class="review-form">
+        <textarea name="reviewText" placeholder="Write your review here..." required></textarea>
+        <input type="hidden" name="songID" value="{{ line.songid }}">
+        <button type="submit" class="button">Submit</button>
     </form>
     <br>
 
-    {% for line in song_info %}
-    <form action="/rate_song" method="GET" id="ratesong">
-        <label for="ratesong">Rate Song:</label>
-        <select name="numStars" id="ratesong">
+    <h2>Rate Song:</h2>
+    <form action="/rate_song" method="GET" class="rating-form">
+        <label for="numStars">Rating:</label>
+        <select name="numStars" id="numStars">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
         </select>
-        <input type="hidden" name="songID" value={{line.songid}}></input>
-        {% endfor %}
-        <input type="submit" name="Submit" value="Submit Rating" />
+        <input type="hidden" name="songID" value="{{ line.songid }}">
+        <button type="submit" class="button">Submit Rating</button>
     </form>
     <br>
-    {% if error %}
-    <p class="error"><strong>Error:</strong> {{error}}</p>
-    {% endif %}
+
+    <a href="/artist/{{ line.artistid }}" class="button">Go to Artist Page</a>
     <br>
-    {% for line in song_info %}
-    <a href="/artist/{{line.artistid}}">Go to Artist Page</a>
-    {% endfor %}
-    <br>
-    <a href="/home">Return Home</a>
-    <br>
-    <a href="/login">Return to Login</a>
+{% endfor %}
+
+{% if error %}
+<p class="error"><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+ 
 
 
 </body>
-
-
-</html>
+{% endblock %}
