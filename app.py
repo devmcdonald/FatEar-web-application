@@ -577,11 +577,14 @@ def search_users():
     username = session["username"]
     friend = request.args["user"]
     cursor = conn.cursor()
-    query = "SELECT username, concat(fname, ' ', lname) as name FROM users WHERE (username like %s OR concat(fname, ' ', lname) like %s) and username <> %s"
+    query = "SELECT username, (fname || ' ' || lname) as name FROM users WHERE (username like %s OR (fname || ' ' || lname) like %s) and username <> %s"
     cursor.execute(query, ("%" + friend + "%", "%" + friend + "%", username))
     data = cursor.fetchall()
     if data:
-        return render_template("searched_users.html", result=data)
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        people = [dict(zip(columns, row)) for row in data]
+        return render_template("searched_users.html", result=people)
     else:
         error = "No users found"
         return home(error)
@@ -725,27 +728,27 @@ def user(user, error=None):
     username = session["username"]  # must be logged in
     cursor = conn.cursor()
     userQuery = "SELECT username, concat(fname, ' ', lname) as name, lastlogin, nickname FROM users WHERE username = %s"
-    cursor.execute(userQuery, (user))
+    cursor.execute(userQuery, (user,))
     userInfo = cursor.fetchall()
 
     artistQuery = "SELECT artistID, concat(fname, ' ', lname) as artistName, artistBio, artistURL FROM userfanofartist NATURAL JOIN artist WHERE username = %s"
-    cursor.execute(artistQuery, (user))
+    cursor.execute(artistQuery, (user,))
     artistResults = cursor.fetchall()
 
     songRatingQuery = "SELECT songID, stars, ratingDate, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM ratesong NATURAL JOIN song NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
-    cursor.execute(songRatingQuery, (user))
+    cursor.execute(songRatingQuery, (user,))
     songRatings = cursor.fetchall()
 
     songReviewQuery = "SELECT songID, reviewText, reviewDate, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM reviewsong NATURAL JOIN song NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
-    cursor.execute(songReviewQuery, (user))
+    cursor.execute(songReviewQuery, (user,))
     songReviews = cursor.fetchall()
 
     albumRatingQuery = "SELECT albumID, stars, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM ratealbum NATURAL JOIN album NATURAL JOIN songinalbum NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
-    cursor.execute(albumRatingQuery, user)
+    cursor.execute(albumRatingQuery, (user,))
     albumRatings = cursor.fetchall()
 
     albumReviewQuery = "SELECT albumID, reviewText, reviewDate, album.title as albumTitle, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM reviewalbum NATURAL JOIN album NATURAL JOIN songinalbum NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
-    cursor.execute(albumReviewQuery, user)
+    cursor.execute(albumReviewQuery, (user,))
     albumReviews = cursor.fetchall()
 
     cursor.close()
