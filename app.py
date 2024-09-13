@@ -349,7 +349,7 @@ def home(error=None):
         cursor = conn.cursor()
         # Query 2 finds reviews of friends since my last login
         query2 = "\
-            (select username, album.title AS albumName, null as songID, title, reviewText, reviewDate \
+            (select username, album.title AS albumName, '' as songID, title, reviewText, reviewDate \
             from reviewAlbum join album using(albumID)\
             where username = %s AND reviewDate > \
                 (select lastlogin \
@@ -364,11 +364,11 @@ def home(error=None):
                     select S.user1 as username\
                     from friend as S\
                     where S.user2 = %s and S.acceptStatus = 'Accepted') \
-                OR username in\
-                (select follows as username\
-                from follows\
-                where follower = %s))\
-        UNION\
+                    OR username in\
+                    (select follows as username\
+                    from follows\
+                    where follower = %s))\
+            UNION\
             (select username, null as albumName, songID, title, reviewText, reviewDate\
             from reviewSong join song using(songID)\
             where username = %s AND reviewDate >\
@@ -384,10 +384,11 @@ def home(error=None):
                     select S.user1 as username\
                     from friend as S\
                     where S.user2 = %s and S.acceptStatus = 'Accepted') \
-                OR username in\
+                    OR username in\
                     (select follows as FollowedUsers\
                     from follows\
                     where follower = %s));"
+
         
         cursor.execute(query2, (user, user, user, user, user, user, user, user, user, user))
         data2 = cursor.fetchall()
