@@ -512,12 +512,12 @@ def rate_song():
 def curr_friends():
     username = session["username"]
     cursor = conn.cursor()
-    query = "select F.user2 as username \
-		from friend as F \
+    query = "select F.user2 as username, users.fname as fname, users.lname as lname \
+		from friend as F join users on (F.user2=users.username)\
 		where F.user1 = %s and F.acceptStatus = 'Accepted'  \
 		UNION distinct \
-		select S.user1 as username \
-		from friend as S \
+		select S.user1 as username, users.fname, users.lname \
+		from friend as S join users on (S.user1=users.username)\
 		where S.user2 = %s and S.acceptStatus = 'Accepted'"
 
     cursor.execute(query, (username, username,))
