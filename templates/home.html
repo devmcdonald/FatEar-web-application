@@ -32,6 +32,8 @@
                 <input type="submit" value="Search Artists" />
             </form>
         </div>
+
+        <a href="/logout" class="btn logout-btn">Logout</a>
     </div>
 
     <div class="container">
@@ -101,8 +103,6 @@
         {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}</p>
         {% endif %}
-
-        <a href="/logout">Logout</a>
     </div>
 
 </body>
