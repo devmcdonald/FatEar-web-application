@@ -199,7 +199,7 @@ tr:nth-child(even) {
 
 /* Updated Link Styles */
 a {
-    color: #002f6c; /* Navy blue text color for links */
+    color: #1e90ff; /* Light blue text color for links */
     text-decoration: none;
     -webkit-text-stroke: none; /* Remove text outline from links */
     text-shadow: none; /* Remove text shadow from links */
