@@ -27,6 +27,7 @@ SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
 """
 # Set environment variables - production
 SECRET_KEY = os.environ.get("SECRET_KEY")
+app.secret_key = SECRET_KEY
 DB_HOST = os.environ.get("DB_HOST")
 DB_PORT = os.environ.get("DB_PORT")
 DB_USER = os.environ.get("DB_USER")
