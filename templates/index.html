@@ -1,26 +1,111 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-	<h1>Welcome to FatEar!</h1>
+    <title>FatEar</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('static/background.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff; /* White text color */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+            overflow: hidden; /* Hide scrollbars */
+        }
+
+        h1 {
+            color: #ffffff; /* White text color */
+            margin: 20px 0;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8); /* Increased shadow for better readability */
+        }
+
+        p {
+            color: #ffffff; /* White text color */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8); /* Increased shadow for better readability */
+        }
+
+        /* Form Styles */
+        form {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Increased shadow for form */
+            margin: 20px;
+        }
+
+        input[type="text"] {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            color: #000000; /* Black text color for input fields */
+        }
+
+        input[type="submit"] {
+            background-color: #002f6c; /* Navy blue */
+            color: #ffffff; /* White text color */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow for button */
+        }
+
+        input[type="submit"]:hover {
+            background-color: #004080; /* Darker navy blue */
+        }
+
+        .error {
+            color: #dc3545; /* Bootstrap red */
+            margin-top: 10px;
+            text-shadow: none; /* Ensure no shadow effect */
+        }
+
+        /* Link Styles */
+        a {
+            color: #ffffff; /* White text color */
+            text-decoration: none;
+            font-size: 1.2em;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8); /* Increased shadow for links */
+            margin: 10px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<br>
 
 <body>
-	Input one or more fields below to search for songs:
-	<form action="/songSearch" method="POST">
-		<input type="text" name="artist" placeholder="artist" /> </br>
-		<input type="text" name="genre" placeholder="genre" /></br>
-		<input type="text" name="rating" placeholder="min rating" /></br>
-		<input type="submit" value=Search />
-		{% if error %}
-		<p class="error"><strong>Error:</strong> {{error}}</p>
-		{% endif %}
-	</form>
-	<br>
-	<a href="/login">Login</a>
-	<br>
-	<a href="/register">Register</a>
+    <div>
+        <h1>Welcome to FatEar!</h1>
+        <p>Input one or more fields below to search for songs:</p>
+        <form action="/songSearch" method="POST">
+            <input type="text" name="artist" placeholder="artist" /> </br>
+            <input type="text" name="genre" placeholder="genre" /></br>
+            <input type="text" name="rating" placeholder="min rating" /></br>
+            <input type="submit" value="Search" />
+            {% if error %}
+            <p class="error"><strong>Error:</strong> {{error}}</p>
+            {% endif %}
+        </form>
+        <br>
+        <a href="/login">Login</a>
+        <br>
+        <a href="/register">Register</a>
+    </div>
 </body>
-
 </html>

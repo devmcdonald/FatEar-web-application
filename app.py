@@ -53,25 +53,6 @@ db = SQLAlchemy()
 # Set DB_PASSWORD in env variable before deployment
 db.init_app(app)
 
-# Flask routes
-def allowed_image(filename):
-    if not "." in filename:
-        return False
-
-    ext = filename.rsplit(".", 1)[1]
-
-    if ext.upper() in app.config["ALLOWED_IMAGE_EXTENSIONS"]:
-        return True
-    else:
-        return False
-
-
-def allowed_image_filesize(filesize):
-    if int(filesize) <= app.config["MAX_IMAGE_FILESIZE"]:
-        return True
-    else:
-        return False
-
 
 # Define a route to hello function
 @app.route("/")
@@ -510,191 +491,219 @@ def rate_song():
 
 @app.route("/curr_friends")
 def curr_friends():
-    username = session["username"]
-    cursor = conn.cursor()
-    query = "select F.user2 as username, users.fname as fname, users.lname as lname \
-		from friend as F join users on (F.user2=users.username)\
-		where F.user1 = %s and F.acceptStatus = 'Accepted'  \
-		UNION distinct \
-		select S.user1 as username, users.fname, users.lname \
-		from friend as S join users on (S.user1=users.username)\
-		where S.user2 = %s and S.acceptStatus = 'Accepted'"
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        username = session["username"]
+        cursor = conn.cursor()
+        query = "select F.user2 as username, users.fname as fname, users.lname as lname \
+            from friend as F join users on (F.user2=users.username)\
+            where F.user1 = %s and F.acceptStatus = 'Accepted'  \
+            UNION distinct \
+            select S.user1 as username, users.fname, users.lname \
+            from friend as S join users on (S.user1=users.username)\
+            where S.user2 = %s and S.acceptStatus = 'Accepted'"
 
-    cursor.execute(query, (username, username,))
-    data = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    friends = [dict(zip(columns, row)) for row in data]
-    
-    cursor.close()
-    return render_template("curr_friends.html", username=username, friendlist=friends)
+        cursor.execute(query, (username, username,))
+        data = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        friends = [dict(zip(columns, row)) for row in data]
+        
+        cursor.close()
+        return render_template("curr_friends.html", username=username, friendlist=friends)
 
 
 @app.route("/pending_requests")
 def pending_requests():
-    username = session["username"]
-    cursor = conn.cursor()
-    query = "select user1 as requester \
-	    from friend \
-	    where user2 = %s and acceptStatus = 'Pending' and requestSentBy = user1 \
-	    UNION \
-	    select user2 as requester \
-	    from friend \
-	    where user1 = %s and acceptStatus = 'Pending' and requestSentBy = user2"
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        username = session["username"]
+        cursor = conn.cursor()
+        query = "select user1 as requester \
+            from friend \
+            where user2 = %s and acceptStatus = 'Pending' and requestSentBy = user1 \
+            UNION \
+            select user2 as requester \
+            from friend \
+            where user1 = %s and acceptStatus = 'Pending' and requestSentBy = user2"
 
-    cursor.execute(query, (username, username,))
-    data = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    friends = [dict(zip(columns, row)) for row in data]
-    cursor.close()
-    return render_template("pending_requests.html", username=username, requests=friends)
+        cursor.execute(query, (username, username,))
+        data = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        friends = [dict(zip(columns, row)) for row in data]
+        cursor.close()
+        return render_template("pending_requests.html", username=username, requests=friends)
 
 
 @app.route("/accept_req/<user>")
 def accept_req(user):
-    username = session["username"]
-    cursor = conn.cursor()
-    query = "UPDATE friend SET acceptStatus = 'Accepted' WHERE (user1 = %s AND user2 = %s) OR (user2 = %s AND user1 = %s)"
-    cursor.execute(query, (username, user, username, user))
-    conn.commit()
-    cursor.close()
-    return redirect(url_for("pending_requests"))
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        username = session["username"]
+        cursor = conn.cursor()
+        query = "UPDATE friend SET acceptStatus = 'Accepted' WHERE (user1 = %s AND user2 = %s) OR (user2 = %s AND user1 = %s)"
+        cursor.execute(query, (username, user, username, user))
+        conn.commit()
+        cursor.close()
+        return redirect(url_for("pending_requests"))
 
 
 @app.route("/deny_req/<user>")
 def deny_req(user):
-    username = session["username"]
-    cursor = conn.cursor()
-    query = "UPDATE friend SET acceptStatus = 'Not Accepted' WHERE (user1 = %s AND user2 = %s) OR (user2 = %s AND user1 = %s)"
-    cursor.execute(query, (username, user, username, user))
-    conn.commit()
-    cursor.close()
-    return redirect(url_for("pending_requests"))
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        username = session["username"]
+        cursor = conn.cursor()
+        query = "UPDATE friend SET acceptStatus = 'Not Accepted' WHERE (user1 = %s AND user2 = %s) OR (user2 = %s AND user1 = %s)"
+        cursor.execute(query, (username, user, username, user))
+        conn.commit()
+        cursor.close()
+        return redirect(url_for("pending_requests"))
 
 
 @app.route("/search_users")
 def search_users():
-    username = session["username"]
-    friend = request.args["user"]
-    cursor = conn.cursor()
-    query = "SELECT username, (fname || ' ' || lname) as name FROM users WHERE (username like %s OR (fname || ' ' || lname) like %s) and username <> %s"
-    cursor.execute(query, ("%" + friend + "%", "%" + friend + "%", username))
-    data = cursor.fetchall()
-    if data:
-        # Convert into a list of dictionaries
-        columns = [desc[0] for desc in cursor.description]
-        people = [dict(zip(columns, row)) for row in data]
-        return render_template("searched_users.html", result=people)
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
     else:
-        error = "No users found"
-        return home(error)
+        username = session["username"]
+        friend = request.args["user"]
+        cursor = conn.cursor()
+        query = "SELECT username, (fname || ' ' || lname) as name FROM users WHERE (username like %s OR (fname || ' ' || lname) like %s) and username <> %s"
+        cursor.execute(query, ("%" + friend + "%", "%" + friend + "%", username))
+        data = cursor.fetchall()
+        if data:
+            # Convert into a list of dictionaries
+            columns = [desc[0] for desc in cursor.description]
+            people = [dict(zip(columns, row)) for row in data]
+            return render_template("searched_users.html", result=people)
+        else:
+            error = "No users found"
+            return home(error)
 
 
 @app.route("/follow/<person>")
 def follow(person):
-    username = session["username"]
-    cursor = conn.cursor()
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        username = session["username"]
+        cursor = conn.cursor()
 
-    query0 = "SELECT* FROM follows WHERE follower=%s and follows=%s"
-    cursor.execute(query0, (username, person))
-    safetynet = cursor.fetchall()
-    error = None
-    if safetynet:  # rating already exists
-        error = "You already follows this user."
-        return user(person, error)
+        query0 = "SELECT* FROM follows WHERE follower=%s and follows=%s"
+        cursor.execute(query0, (username, person))
+        safetynet = cursor.fetchall()
+        error = None
+        if safetynet:  # rating already exists
+            error = "You already follows this user."
+            return user(person, error)
 
-    query = "INSERT INTO follows(follower, follows, createdAt) VALUES (%s, %s, %s)"
-    cursor.execute(query, (username, person, datetime.datetime.now()))
-    conn.commit()
-    cursor.close()
-    return redirect(url_for("home"))
+        query = "INSERT INTO follows(follower, follows, createdAt) VALUES (%s, %s, %s)"
+        cursor.execute(query, (username, person, datetime.datetime.now()))
+        conn.commit()
+        cursor.close()
+        return redirect(url_for("home"))
 
 
 @app.route("/send_req/<person>")
 def send_req(person):
-    username = session["username"]
-    cursor = conn.cursor()
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        username = session["username"]
+        cursor = conn.cursor()
 
-    query0 = (
-        "SELECT* FROM friend WHERE (user1=%s and user2=%s) OR (user2=%s and user1=%s)"
-    )
-    cursor.execute(query0, (username, person, username, person))
-    safetynet = cursor.fetchall()
-    error = None
-    if safetynet:  # request already exists
-        error = "A friend request already exists for this user."
-        return user(person, error)
+        query0 = (
+            "SELECT* FROM friend WHERE (user1=%s and user2=%s) OR (user2=%s and user1=%s)"
+        )
+        cursor.execute(query0, (username, person, username, person))
+        safetynet = cursor.fetchall()
+        error = None
+        if safetynet:  # request already exists
+            error = "A friend request already exists for this user."
+            return user(person, error)
 
-    query = "INSERT INTO friend(user1, user2, acceptStatus, requestSentBy, createdAt, updatedAt) VALUES (%s, %s, %s, %s, %s, %s)"
-    cursor.execute(
-        query,
-        (
-            username,
-            person,
-            "Pending",
-            username,
-            datetime.datetime.now(),
-            datetime.datetime.now(),
-        ),
-    )
-    conn.commit()
-    cursor.close()
-    return redirect(url_for("home"))
+        query = "INSERT INTO friend(user1, user2, acceptStatus, requestSentBy, createdAt, updatedAt) VALUES (%s, %s, %s, %s, %s, %s)"
+        cursor.execute(
+            query,
+            (
+                username,
+                person,
+                "Pending",
+                username,
+                datetime.datetime.now(),
+                datetime.datetime.now(),
+            ),
+        )
+        conn.commit()
+        cursor.close()
+        return redirect(url_for("home"))
 
 
 @app.route("/followed_artists")
 def followed_artists():
-    username = session["username"]
-    cursor = conn.cursor()
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        username = session["username"]
+        cursor = conn.cursor()
 
-    query = "select artistID, (artist.fname || ' ' || artist.lname) AS artistName, artistBio, artistURL\
-		from userfanofartist NATURAL JOIN artist \
-		where username = %s"
+        query = "select artistID, (artist.fname || ' ' || artist.lname) AS artistName, artistBio, artistURL\
+            from userfanofartist NATURAL JOIN artist \
+            where username = %s"
 
-    cursor.execute(query, (username,))
-    data = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    artists = [dict(zip(columns, row)) for row in data]
-    
-    cursor.close()
-    return render_template("followed_artists.html", username=username, artistList=artists)
+        cursor.execute(query, (username,))
+        data = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        artists = [dict(zip(columns, row)) for row in data]
+        
+        cursor.close()
+        return render_template("followed_artists.html", username=username, artistList=artists)
 
 
 @app.route("/artist/<artistID>")
 def artist(artistID, error=None):
-    cursor = conn.cursor()
-    songQuery = "SELECT songID, song.title AS title, releaseDate, genre, ROUND(AVG(stars), 2) AS avgrating FROM artistperformssong NATURAL JOIN song NATURAL JOIN songgenre NATURAL JOIN ratesong GROUP BY songID, title, releaseDate, genre, artistID HAVING artistID = %s"
-    cursor.execute(songQuery, (artistID,))
-    songResults = cursor.fetchall()
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        
+        cursor = conn.cursor()
+        songQuery = "SELECT songID, song.title AS title, releaseDate, genre, ROUND(AVG(stars), 2) AS avgrating FROM artistperformssong NATURAL JOIN song NATURAL JOIN songgenre NATURAL JOIN ratesong GROUP BY songID, title, releaseDate, genre, artistID HAVING artistID = %s"
+        cursor.execute(songQuery, (artistID,))
+        songResults = cursor.fetchall()
 
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    songs = [dict(zip(columns, row)) for row in songResults]
-    
-    albumQuery = "SELECT albumID, album.title as title, ROUND(AVG(stars), 2) AS avgrating FROM artistperformssong NATURAL JOIN song NATURAL JOIN songinalbum JOIN album using(albumID) NATURAL JOIN ratealbum GROUP BY albumID, album.title, artistID HAVING artistID = %s"
-    cursor.execute(albumQuery, (artistID,))
-    albumResults = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    albums = [dict(zip(columns, row)) for row in albumResults]
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        songs = [dict(zip(columns, row)) for row in songResults]
+        
+        albumQuery = "SELECT albumID, album.title as title, ROUND(AVG(stars), 2) AS avgrating FROM artistperformssong NATURAL JOIN song NATURAL JOIN songinalbum JOIN album using(albumID) NATURAL JOIN ratealbum GROUP BY albumID, album.title, artistID HAVING artistID = %s"
+        cursor.execute(albumQuery, (artistID,))
+        albumResults = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        albums = [dict(zip(columns, row)) for row in albumResults]
 
-    artistQuery = "SELECT (artist.fname || ' ' || artist.lname) AS artistName, artistBio, artistURL, artistID FROM artist WHERE artistID=%s"
-    cursor.execute(artistQuery, (artistID,))
-    artistResults = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    artists = [dict(zip(columns, row)) for row in artistResults]
+        artistQuery = "SELECT (artist.fname || ' ' || artist.lname) AS artistName, artistBio, artistURL, artistID FROM artist WHERE artistID=%s"
+        cursor.execute(artistQuery, (artistID,))
+        artistResults = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        artists = [dict(zip(columns, row)) for row in artistResults]
 
-    cursor.close()
-    return render_template(
-        "artist.html",
-        songResults=songs,
-        albumResults=albums,
-        artistResults=artists,
-        error=error,
-    )
+        cursor.close()
+        return render_template(
+            "artist.html",
+            songResults=songs,
+            albumResults=albums,
+            artistResults=artists,
+            error=error,
+        )
 
 
 @app.route("/become_fan/<artistID>")
@@ -725,109 +734,90 @@ def become_fan(artistID):
 
 @app.route("/search_artists")
 def search_artists():
-    username = session["username"]
-    search = request.args["search"]
-    cursor = conn.cursor()
-    query = "SELECT artistID, (artist.fname || ' ' || artist.lname) AS artistName FROM artist WHERE artistID like %s OR (artist.fname || ' ' || artist.lname) like %s"
-    cursor.execute(query, ("%" + search + "%", "%" + search + "%"))
-    data = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    artists = [dict(zip(columns, row)) for row in data]
-    if data:
-        return render_template("searched_artists.html", result=artists)
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
     else:
-        error = "No artists found"
-        return home(error)
+        username = session["username"]
+        search = request.args["search"]
+        cursor = conn.cursor()
+        query = "SELECT artistID, (artist.fname || ' ' || artist.lname) AS artistName FROM artist WHERE artistID like %s OR (artist.fname || ' ' || artist.lname) like %s"
+        cursor.execute(query, ("%" + search + "%", "%" + search + "%"))
+        data = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        artists = [dict(zip(columns, row)) for row in data]
+        if data:
+            return render_template("searched_artists.html", result=artists)
+        else:
+            error = "No artists found"
+            return home(error)
 
 
 @app.route("/user/<user>")
 def user(user, error=None):
-    username = session["username"]  # must be logged in
-    cursor = conn.cursor()
-    userQuery = "SELECT username, concat(fname, ' ', lname) as name, lastlogin, nickname FROM users WHERE username = %s"
-    cursor.execute(userQuery, (user,))
-    userInfo = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    myInfo = [dict(zip(columns, row)) for row in userInfo]
-    
-    artistQuery = "SELECT artistID, concat(fname, ' ', lname) as artistName, artistBio, artistURL FROM userfanofartist NATURAL JOIN artist WHERE username = %s"
-    cursor.execute(artistQuery, (user,))
-    artistResults = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    artists = [dict(zip(columns, row)) for row in artistResults]
+    if "username" not in session:
+        return render_template("index.html", error="User Not Logged In")
+    else:
+        username = session["username"]  # must be logged in
+        cursor = conn.cursor()
+        userQuery = "SELECT username, concat(fname, ' ', lname) as name, lastlogin, nickname FROM users WHERE username = %s"
+        cursor.execute(userQuery, (user,))
+        userInfo = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        myInfo = [dict(zip(columns, row)) for row in userInfo]
+        
+        artistQuery = "SELECT artistID, concat(fname, ' ', lname) as artistName, artistBio, artistURL FROM userfanofartist NATURAL JOIN artist WHERE username = %s"
+        cursor.execute(artistQuery, (user,))
+        artistResults = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        artists = [dict(zip(columns, row)) for row in artistResults]
 
-    songRatingQuery = "SELECT songID, stars, ratingDate, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM ratesong NATURAL JOIN song NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
-    cursor.execute(songRatingQuery, (user,))
-    songRatings = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    songsRat = [dict(zip(columns, row)) for row in songRatings]
+        songRatingQuery = "SELECT songID, stars, ratingDate, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM ratesong NATURAL JOIN song NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
+        cursor.execute(songRatingQuery, (user,))
+        songRatings = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        songsRat = [dict(zip(columns, row)) for row in songRatings]
 
-    songReviewQuery = "SELECT songID, reviewText, reviewDate, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM reviewsong NATURAL JOIN song NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
-    cursor.execute(songReviewQuery, (user,))
-    songReviews = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    songsRev = [dict(zip(columns, row)) for row in songReviews]
+        songReviewQuery = "SELECT songID, reviewText, reviewDate, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM reviewsong NATURAL JOIN song NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
+        cursor.execute(songReviewQuery, (user,))
+        songReviews = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        songsRev = [dict(zip(columns, row)) for row in songReviews]
 
-    albumRatingQuery = "SELECT albumID, stars, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM ratealbum NATURAL JOIN album NATURAL JOIN songinalbum NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
-    cursor.execute(albumRatingQuery, (user,))
-    albumRatings = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    albumRats = [dict(zip(columns, row)) for row in albumRatings]
+        albumRatingQuery = "SELECT albumID, stars, title, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM ratealbum NATURAL JOIN album NATURAL JOIN songinalbum NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
+        cursor.execute(albumRatingQuery, (user,))
+        albumRatings = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        albumRats = [dict(zip(columns, row)) for row in albumRatings]
 
-    albumReviewQuery = "SELECT albumID, reviewText, reviewDate, album.title as albumTitle, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM reviewalbum NATURAL JOIN album NATURAL JOIN songinalbum NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
-    cursor.execute(albumReviewQuery, (user,))
-    albumReviews = cursor.fetchall()
-    # Convert into a list of dictionaries
-    columns = [desc[0] for desc in cursor.description]
-    albumRevs = [dict(zip(columns, row)) for row in albumReviews]
+        albumReviewQuery = "SELECT albumID, reviewText, reviewDate, album.title as albumTitle, concat(artist.fname, ' ', artist.lname) AS artistName, artistID FROM reviewalbum NATURAL JOIN album NATURAL JOIN songinalbum NATURAL JOIN artistperformssong JOIN artist using(artistID) WHERE username = %s"
+        cursor.execute(albumReviewQuery, (user,))
+        albumReviews = cursor.fetchall()
+        # Convert into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        albumRevs = [dict(zip(columns, row)) for row in albumReviews]
 
-    cursor.close()
-    return render_template(
-        "user.html",
-        userInfo=myInfo,
-        artistResults=artists,
-        songRatings=songsRat,
-        songReviews=songsRev,
-        albumRatings=albumRats,
-        albumReviews=albumRevs,
-        error=error,
-    )
+        cursor.close()
+        return render_template(
+            "user.html",
+            userInfo=myInfo,
+            artistResults=artists,
+            songRatings=songsRat,
+            songReviews=songsRev,
+            albumRatings=albumRats,
+            albumReviews=albumRevs,
+            error=error,
+        )
 
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
-@app.route("/")
-def upload_form():
-    return render_template("upload.html")
-
-
-@app.route("/", methods=["POST"])
-def upload_file():
-    if request.method == "POST":
-        # check if the post request has the file part
-        if "file" not in request.files:
-            flash("No file part")
-            return redirect(request.url)
-        file = request.files["file"]
-        if file.filename == "":
-            flash("No file selected for uploading")
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-            flash("File successfully uploaded")
-            return redirect("/")
-        else:
-            flash("Allowed file types are txt, pdf, png, jpg, jpeg, gif")
-            return redirect(request.url)
 
 
 @app.route("/logout")
