@@ -28,7 +28,10 @@ Use the sample login to see a filled-out profile, view user interactions, and ex
 
 ## Technical Details
 
+- **Frontend Framework:** HTML, CSS, and JavaScript for the user interface.
+- **Backend Framework:** Flask (Python) for handling server-side logic.
 - **Database:** PostgreSQL hosted on [Supabase](https://supabase.com/).
+- **Hosting:** The app is deployed on [Render](https://render.com/), providing an easy and scalable platform for web app hosting.
 - **Database Structure:** Find the detailed database structure in the [ER-Diagram.pdf](ER-Diagram.PDF).
 - **SQL Scripts:** The database schema and sample data insertions are available in the provided SQL files for reference or setup.
 
